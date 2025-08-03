@@ -10,6 +10,7 @@ public class Enemy_P : MonoBehaviour
     RaycastHit2D playercheckray;
     bool isjumping;
     bool isplayerchecking;
+    bool isFlip;
     Animator anim;
     SpriteRenderer spriteRenderer;
     public GameObject player;
@@ -66,6 +67,7 @@ public class Enemy_P : MonoBehaviour
     void EnemyAngryMove()
     {
         float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
+        Debug.Log(direction);
         isjumping = true;
         rigid.AddForce(new Vector2(direction * 4, 6), ForceMode2D.Impulse);
         if (!isplayerchecking)
@@ -103,16 +105,19 @@ public class Enemy_P : MonoBehaviour
         Debug.Log("플레이어 체크 " + isplayerchecking);
         Debug.Log("플립 체크 " +  spriteRenderer.flipX);
 
-
         if (rigid.linearVelocity.x < 0)
         {
-            spriteRenderer.flipX = true;
+            isFlip = true;
         }
         else if (rigid.linearVelocity.x > 0)
         {
-            spriteRenderer.flipX = false;
+            isFlip = false;
         }
-            
+
+        spriteRenderer.flipX = isFlip;
+
+
+
     }
     void Update()
     {
@@ -151,8 +156,8 @@ public class Enemy_P : MonoBehaviour
         Vector3[] rayOrigins = new Vector3[]
         {
         transform.position,                          // 가운데
-        transform.position + new Vector3(0, -0.5f, 0), // 아래쪽
-        transform.position + new Vector3(0,  0.5f, 0)  // 위쪽
+        transform.position + new Vector3(0, -0.4f, 0), // 아래쪽
+        transform.position + new Vector3(0,  0.4f, 0)  // 위쪽
         };
 
         isplayerchecking = false;
