@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class testsenes : MonoBehaviour
+public class please : MonoBehaviour
 {
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
