@@ -1,101 +1,53 @@
-using Unity.VisualScripting;
-using UnityEngine;
-using System.Collections;
+ï»¿using UnityEngine;
 
 public class Enemy_P : MonoBehaviour
 {
-    Rigidbody2D rigid;
-    public int nextJumpdirection;
-    public int nextJumpTime;
-    RaycastHit2D dawnray;
-    RaycastHit2D playercheckray;
-    bool isjumping;
-    bool isplayerchecking;
-    bool prevPlayerChecking;
-    bool seeright;
-    bool isFlip;
-    Animator anim;
-    SpriteRenderer spriteRenderer;
-    public GameObject player;
+	Rigidbody2D rigid;
+	public int nextJumpdirection;
+	public int nextJumpTime;
+	RaycastHit2D dawnray;
+	RaycastHit2D playercheckray;
+	bool isjumping;
+	bool isplayerchecking;
+	Animator anim;
+	SpriteRenderer spriteRenderer;
+	public GameObject player;
 
 
-    private void Awake()
-    {
-        rigid = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        anim = GetComponent<Animator>();
+	private void Awake()
+	{
+		rigid = GetComponent<Rigidbody2D>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		anim = GetComponent<Animator>();
+	}
 
-        nextMoveSelect();
-    }
+	private void Start()
+	{
+		Invoke("EnemyMove", 1);
+	}
 
-    private void Start()
-    {
-    }
+	void EnemyMove()
+	{
+		if (!isjumping && isplayerchecking)
+		{
+			// â— í”Œë ˆì´ì–´ ë°©í–¥ìœ¼ë¡œ ì í”„
+			float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
+			isjumping = true;
+			rigid.AddForce(new Vector2(direction * 3, 5), ForceMode2D.Impulse);
+			Invoke("EnemyMove", 0.5f);
+		}
+		else if (!isjumping && !isplayerchecking)
+		{
+			// â— ëœë¤ ì í”„ (ê¸°ì¡´ëŒ€ë¡œ ìœ ì§€)
+			nextJumpdirection = Random.Range(-1, 2);
+			nextJumpTime = Random.Range(1, 4);
+			isjumping = true;
+			rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
+			Invoke("EnemyMove", nextJumpTime);
+		}
+	}
 
-    /*void EnemyMove()
-    {
-        if (!isjumping && !isplayerchecking)
-        {
-            nextJumpdirection = Random.Range(-1, 2);
-            nextJumpTime = Random.Range(1, 4);
-            isjumping = true;
-            rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
-            Invoke("EnemyMove", nextJumpTime);
-
-        }
-        else if (!isjumping && isplayerchecking)
-        {
-            float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
-            isjumping = true;
-            rigid.AddForce(new Vector2(direction * 3, 5), ForceMode2D.Impulse);
-            Invoke("EnemyMove", 0.5f);
-        }
-    }*/
-
-    void EnemyUsualMove()
-    {
-        Debug.Log("Æò¼Ò¸ğ½ÀÇÔ¼ö");
-        float nextJumpdirection = Random.Range(-1, 2);
-
-        isjumping = true;
-        rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
-        DirectionFlip(nextJumpdirection);
-        nextMoveSelect();
-    }
-
-    void EnemyAngryMove()
-    {
-        Debug.Log("¾Ş±×¸®¸ğ½ÀÇÔ¼ö");
-        float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
-        isjumping = true;
-        rigid.AddForce(new Vector2(direction * 4, 6), ForceMode2D.Impulse);
-        DirectionFlip(direction);
-        nextMoveSelect();
-    }
-
-    void nextMoveSelect()
-    {
-
-        if (!isplayerchecking)
-        {
-            int nextJumpTime = Random.Range(1, 4);
-            Invoke("EnemyUsualMove", nextJumpTime);
-        }
-        else if (isplayerchecking)
-        {
-            Invoke("EnemyAngryMove", 0.5f);
-        }
-    }
-
-    void DirectionFlip(float dir)
-    {
-        if (dir > 0)
-            seeright = true;
-        else if (dir < 0)
-            seeright = false;
-    }
-
-    /*private void OnCollisionEnter2D(Collision2D collision)
+	/*private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Wall")
         {
@@ -105,134 +57,96 @@ public class Enemy_P : MonoBehaviour
         }
     }*/
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+	// Start is called once before the first execution of Update after the MonoBehaviour is created
+	void Update()
+	{
+		anim.SetBool("isJumping", isjumping);
+		anim.SetBool("isPlayerChecking", isplayerchecking);
+	}
 
+	// Update is called once per frame
+	void FixedUpdate()
+	{
+		// â— ë°”ë‹¥ ê°ì§€ â†’ isjumping ìƒíƒœ ê°±ì‹ 
+		PlatfromCheckRay();
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        // ¹Ù´Ú °¨Áö Ray ÇÔ¼ö
-        PlatfromCheckRay();
+		// â— ì´ë™ ë°©í–¥ ê¸°ì¤€ìœ¼ë¡œ flipX ê°±ì‹  (ì†ë„ ê¸°ì¤€)
+		float velocityX = rigid.linearVelocity.x;
 
-        // ÇÃ·¹ÀÌ¾î °¨Áö Ray ÇÔ¼ö
-        PlayerCheckRay();
+		if (Mathf.Abs(velocityX) >= 0.01f)
+		{
+			if (velocityX < 0)
+			{
+				spriteRenderer.flipX = true;
+			}
+			else
+			{
+				spriteRenderer.flipX = false;
+			}
+		}
 
-        
-        /*if (rigid.linearVelocity.x < 0)
-        {
-            Debug.Log("ÁÂ");
-            isFlip = true;
-        }
-        else if (rigid.linearVelocity.x > 0)
-        {
-            Debug.Log("¿ì");
-            isFlip = false;
-        }*/
+		// â— flipX ê¸°ì¤€ ë°©í–¥ìœ¼ë¡œ Ray ë°œì‚¬ â†’ ì •í™•í•œ ê°ì§€ ë³´ì¥
+		PlayerCheckRay();
 
-        if (!seeright)
-        {
-            Debug.Log("ÁÂ");
-            isFlip = true;
-        }
-        else if (seeright)
-        {
-            Debug.Log("¿ì");
-            isFlip = false;
-        }
+		// â— ë””ë²„ê·¸ ì¶œë ¥
+		Debug.Log("í”Œë ˆì´ì–´ ì²´í¬ " + isplayerchecking);
+		Debug.Log("í”Œë¦½ ì²´í¬ " + spriteRenderer.flipX);
+	}
 
-        spriteRenderer.flipX = isFlip;
+	void PlatfromCheckRay()
+	{
+		// ë°”ë‹¥ ê°ì§€ ray
+		if (rigid.linearVelocity.y < 0)
+		{
+			Debug.DrawRay(transform.position, Vector2.down * 0.5f, new Color(1, 0, 0, 0.7f));
 
-        /*//GPT ¼Ö·ç¼Ç
-        if (!prevPlayerChecking && isplayerchecking)
-        {
-            Debug.Log("ÇÃ·¹ÀÌ¾î ¹ß°ß! °ø°İ ÀüÈ¯");
-            CancelInvoke("EnemyUsualMove");
-            CancelInvoke("nextMoveSelect");
-            EnemyAngryMove(); // ´Ü¹ß È£Ãâ
-        }
+			dawnray = Physics2D.Raycast(transform.position, Vector2.down,
+			0.55f, LayerMask.GetMask("Platform"));
+			if (dawnray.collider != null)
+			{
+				if (dawnray.collider.gameObject.layer == 10)
+				{
+					isjumping = false;
+				}
 
-        // »óÅÂ ¾÷µ¥ÀÌÆ®´Â ¹İµå½Ã ¸¶Áö¸·¿¡!
-        prevPlayerChecking = isplayerchecking;*/
+			}
+		}
+	}
 
+	void PlayerCheckRay()
+	{
+		Vector2 rayDirection;
 
-    }
-    void Update()
-    {
-        anim.SetBool("isJumping", isjumping);
-        anim.SetBool("isPlayerChecking", isplayerchecking);
+		// â— í•­ìƒ flipX ê¸°ì¤€ ë°©í–¥ìœ¼ë¡œ ì‹œì•¼
+		if (spriteRenderer.flipX)
+		{
+			rayDirection = Vector2.left;
+		}
+		else
+		{
+			rayDirection = Vector2.right;
+		}
 
-        
-    }
+		Debug.DrawRay(transform.position, rayDirection * 5f, new Color(1, 1, 0, 0.7f));
 
-    void PlatfromCheckRay()
-    {
-        // ¹Ù´Ú °¨Áö ray
-        if (rigid.linearVelocity.y < 0)
-        {
-            Debug.DrawRay(transform.position, Vector2.down * 0.5f, new Color(1, 0, 0, 0.7f));
+		playercheckray = Physics2D.Raycast(transform.position, rayDirection, 5f, LayerMask.GetMask("Player"));
 
-            dawnray = Physics2D.Raycast(transform.position, Vector2.down,
-            0.5f, LayerMask.GetMask("Platform"));
-            if (dawnray.collider != null)
-            {
-                if (dawnray.collider.gameObject.layer == 10)
-                {
-                    isjumping = false;
-                }
-
-            }
-        }
-    }
-
-    void PlayerCheckRay()
-    {
-        // ÇÃ·¹ÀÌ¾î °¨Áö ray, ÇÃ¸³±âÁØ »ïÇ×¿¬»êÀÚ ray ¹æÇâ ÆÇ´Ü
-        Vector2 xRayDirection = isFlip ? Vector2.left : Vector2.right;
-        Debug.DrawRay(transform.position, xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
-        Debug.DrawRay(transform.position + new Vector3(0, -0.4f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
-        Debug.DrawRay(transform.position + new Vector3(0, 0.4f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
-
-        Vector2[] rayOrigins = new Vector2[]
-        {
-        transform.position,                             // °¡¿îµ¥
-        transform.position + new Vector3(0, -0.4f, -1), // ¾Æ·¡ÂÊ
-        transform.position + new Vector3(0,  0.4f, -1)  // À§ÂÊ
-        };
-
-
-        foreach (Vector3 rayOrigin in rayOrigins)
-        {
-            playercheckray = Physics2D.Raycast(rayOrigin, xRayDirection, 7f, LayerMask.GetMask("Player"));
-            /*if (playercheckray.collider != null)
-            {
-                if (playercheckray.collider.gameObject.layer == 3)
-                {
-                    isplayerchecking = true;
-                    
-                }
-
-            }*/
-
-            if (playercheckray.collider != null && playercheckray.collider.gameObject.layer == 3)
-            {
-                if (!isplayerchecking)
-                {
-                    isplayerchecking = true;            // ¡Ú ¸ÕÀú true·Î ¼³Á¤
-                    CancelInvoke("nextMoveSelect");
-                    Invoke("nextMoveSelect", 0.5f);          // ÀÌÁ¦ ¹Ù·Î Ãß°İÀ¸·Î ÁøÀÔÇÔ
-                }
-                else
-                {
-                    isplayerchecking = true;
-                }
-            }
-            else
-            {
-                isplayerchecking = false;
-            }
-        }
-
-    }
+		if (playercheckray.collider != null && playercheckray.collider.gameObject.layer == 3)
+		{
+			if (!isplayerchecking)
+			{
+				isplayerchecking = true;            // â˜… ë¨¼ì € trueë¡œ ì„¤ì •
+				CancelInvoke("EnemyMove");
+				Invoke("EnemyMove", 0.5f);          // ì´ì œ ë°”ë¡œ ì¶”ê²©ìœ¼ë¡œ ì§„ì…í•¨
+			}
+			else
+			{
+				isplayerchecking = true;
+			}
+		}
+		else
+		{
+			isplayerchecking = false;
+		}
+	}
 }
-
-

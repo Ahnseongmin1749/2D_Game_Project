@@ -22,9 +22,10 @@ public class Portal : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
+            Debug.Log("c1");
             if (Input.GetButtonDown("Jump"))
             {
-                /*Debug.Log("c2");
+                Debug.Log("c2");
                 string presentmap = collision.transform.parent.name;
                 string targetmap = mapManager.GetMapList(portal_id);
                 GameObject P_map = FindMapObjectByName(presentmap);
@@ -32,15 +33,7 @@ public class Portal : MonoBehaviour
                 Debug.Log(presentmap);
                 Debug.Log(targetmap);
                 P_map.SetActive(false);
-                T_map.SetActive(true);*/
-
-                Debug.Log("c2");
-                GameObject currentmap = mapManager.GetCurrentMap(portal_id);
-                GameObject targetmap = mapManager.GetTargetMap(portal_id);
-                Debug.Log(currentmap);
-                Debug.Log(targetmap);
-                currentmap.SetActive(false);
-                targetmap.SetActive(true);
+                T_map.SetActive(true);
             }
 
 
