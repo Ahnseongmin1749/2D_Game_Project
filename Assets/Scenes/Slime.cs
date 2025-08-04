@@ -30,6 +30,7 @@ public class Slime : MonoBehaviour
 
     private void Start()
     {
+        //EnemyMove();
     }
 
     /*void EnemyMove()
@@ -40,21 +41,23 @@ public class Slime : MonoBehaviour
             nextJumpTime = Random.Range(1, 4);
             isjumping = true;
             rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
+            DirectionFlip(nextJumpdirection);
             Invoke("EnemyMove", nextJumpTime);
 
         }
         else if (!isjumping && isplayerchecking)
         {
-            float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
+            Debug.Log("왜 안오노");
+            int direction = (int)Mathf.Sign(player.transform.position.x - transform.position.x);
             isjumping = true;
             rigid.AddForce(new Vector2(direction * 3, 5), ForceMode2D.Impulse);
+            DirectionFlip(direction);
             Invoke("EnemyMove", 0.5f);
         }
     }*/
 
     void EnemyUsualMove()
     {
-        Debug.Log("평소모습함수");
         float nextJumpdirection = Random.Range(-1, 2);
 
         isjumping = true;
@@ -65,10 +68,9 @@ public class Slime : MonoBehaviour
 
     void EnemyAngryMove()
     {
-        Debug.Log("앵그리모습함수");
         float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
         isjumping = true;
-        rigid.AddForce(new Vector2(direction * 4, 6), ForceMode2D.Impulse);
+        rigid.AddForce(new Vector2(direction * 4, 5), ForceMode2D.Impulse);
         DirectionFlip(direction);
         NextMoveSelect();
     }
@@ -76,12 +78,12 @@ public class Slime : MonoBehaviour
     void NextMoveSelect()
     {
 
-        if (!isplayerchecking && !isjumping)
+        if (!isplayerchecking)
         {
             int nextJumpTime = Random.Range(1, 4);
             Invoke("EnemyUsualMove", nextJumpTime);
         }
-        else if (isplayerchecking && !isjumping)
+        else if (isplayerchecking)
         {
             Invoke("EnemyAngryMove", 0.5f);
         }
@@ -159,7 +161,6 @@ public class Slime : MonoBehaviour
         anim.SetBool("isJumping", isjumping);
         anim.SetBool("isPlayerChecking", isplayerchecking);
 
-        Debug.Log(isplayerchecking);
     }
 
     void PlatfromCheckRay()
@@ -213,23 +214,23 @@ public class Slime : MonoBehaviour
 
             if (playercheckray.collider != null && playercheckray.collider.gameObject.layer == 3)
             {
-                if (!isplayerchecking)
+                /*if (!isplayerchecking)
                 {
                     Debug.Log("sample");
                     isplayerchecking = true;            // ★ 먼저 true로 설정
-                    CancelInvoke("EnemyUsualMove");
+                    CancelInvoke("NextMoveSelect");
                     Invoke("NextMoveSelect", 0.5f);     // 이제 바로 추격으로 진입함
                 }
                 else
                 {
                     isplayerchecking = true;
-                }
+                }*/
+                isplayerchecking = true;
             }
             else
             {
                 isplayerchecking = false;
             }
-            prevPlayerChecking = isplayerchecking;
         }
         
     }

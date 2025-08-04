@@ -1,10 +1,12 @@
+using NUnit.Framework.Internal;
 using UnityEngine;
 
 public class Player_Platformer : MonoBehaviour
 {
     Rigidbody2D rigid;
-    float move;
+    public float move;
     public float speed;
+    public bool isrightlooking;
     public float jump;
     bool isDamageing;
 
@@ -13,23 +15,21 @@ public class Player_Platformer : MonoBehaviour
     bool isjumping;
     RaycastHit2D ray;
 
-    bool islookright;
+    AttackZone attackZone;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        attackZone = GetComponent<AttackZone>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        //½Ã¼± bool°ª
-        if (rigid.linearVelocity.x > 0)
-            islookright = true;
-        else if ((rigid.linearVelocity.x < 0))
-            islookright = false;
+        
 
         //Jump
         if (Input.GetButtonDown("Jump") && !isjumping)
@@ -46,11 +46,13 @@ public class Player_Platformer : MonoBehaviour
         //Move Animation
         if (rigid.linearVelocity.x < 0)
         {
+            isrightlooking = false;
             anim.SetBool("ismoving", true);
             anim.SetInteger("xVelocity", (int)move);
         }
         else if (rigid.linearVelocity.x > 0)
         {
+            isrightlooking = true;
             anim.SetBool("ismoving", true);
             anim.SetInteger("xVelocity", (int)move);
         }
@@ -59,6 +61,8 @@ public class Player_Platformer : MonoBehaviour
             anim.SetBool("ismoving", false);
             anim.SetInteger("xVelocity", (int)move);
         }
+
+        
     }
 
     private void FixedUpdate()
