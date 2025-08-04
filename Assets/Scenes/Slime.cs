@@ -1,53 +1,53 @@
-using Unity.VisualScripting;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Enemy_P : MonoBehaviour
 {
-    Rigidbody2D rigid;
-    public int nextJumpdirection;
-    public int nextJumpTime;
-    RaycastHit2D dawnray;
-    RaycastHit2D playercheckray;
-    bool isjumping;
-    bool isplayerchecking;
-    Animator anim;
-    SpriteRenderer spriteRenderer;
-    public GameObject player;
+	Rigidbody2D rigid;
+	public int nextJumpdirection;
+	public int nextJumpTime;
+	RaycastHit2D dawnray;
+	RaycastHit2D playercheckray;
+	bool isjumping;
+	bool isplayerchecking;
+	Animator anim;
+	SpriteRenderer spriteRenderer;
+	public GameObject player;
 
 
-    private void Awake()
-    {
-        rigid = GetComponent<Rigidbody2D>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        anim = GetComponent<Animator>();
-    }
+	private void Awake()
+	{
+		rigid = GetComponent<Rigidbody2D>();
+		spriteRenderer = GetComponent<SpriteRenderer>();
+		anim = GetComponent<Animator>();
+	}
 
-    private void Start()
-    {
-        Invoke("EnemyMove", 1);
-    }
+	private void Start()
+	{
+		Invoke("EnemyMove", 1);
+	}
 
-    void EnemyMove()
-    {
-        if (!isjumping && !isplayerchecking)
-        {
-            nextJumpdirection = Random.Range(-1, 2);
-            nextJumpTime = Random.Range(1, 4);
-            isjumping = true;
-            rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
-            Invoke("EnemyMove", nextJumpTime);
+	void EnemyMove()
+	{
+		if (!isjumping && isplayerchecking)
+		{
+			// ● 플레이어 방향으로 점프
+			float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
+			isjumping = true;
+			rigid.AddForce(new Vector2(direction * 3, 5), ForceMode2D.Impulse);
+			Invoke("EnemyMove", 0.5f);
+		}
+		else if (!isjumping && !isplayerchecking)
+		{
+			// ● 랜덤 점프 (기존대로 유지)
+			nextJumpdirection = Random.Range(-1, 2);
+			nextJumpTime = Random.Range(1, 4);
+			isjumping = true;
+			rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
+			Invoke("EnemyMove", nextJumpTime);
+		}
+	}
 
-        }
-        else if (!isjumping && isplayerchecking)
-        {
-            float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
-            isjumping = true;
-            rigid.AddForce(new Vector2(direction * 3, 5), ForceMode2D.Impulse);
-            Invoke("EnemyMove", 0.5f);
-        }
-    }
-
-    /*private void OnCollisionEnter2D(Collision2D collision)
+	/*private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.tag == "Wall")
         {
@@ -57,76 +57,96 @@ public class Enemy_P : MonoBehaviour
         }
     }*/
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Update()
-    {
-        anim.SetBool("isJumping", isjumping);
-        anim.SetBool("isPlayerChecking", isplayerchecking);
-    }
+	// Start is called once before the first execution of Update after the MonoBehaviour is created
+	void Update()
+	{
+		anim.SetBool("isJumping", isjumping);
+		anim.SetBool("isPlayerChecking", isplayerchecking);
+	}
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        // �ٴ� ���� Ray �Լ�
-        PlatfromCheckRay();
+	// Update is called once per frame
+	void FixedUpdate()
+	{
+		// ● 바닥 감지 → isjumping 상태 갱신
+		PlatfromCheckRay();
 
-        // �÷��̾� ���� Ray �Լ�
-        PlayerCheckRay();
+		// ● 이동 방향 기준으로 flipX 갱신 (속도 기준)
+		float velocityX = rigid.linearVelocity.x;
 
-        Debug.Log("�÷��̾� üũ " + isplayerchecking);
-        Debug.Log("�ø� üũ " +  spriteRenderer.flipX);
+		if (Mathf.Abs(velocityX) >= 0.01f)
+		{
+			if (velocityX < 0)
+			{
+				spriteRenderer.flipX = true;
+			}
+			else
+			{
+				spriteRenderer.flipX = false;
+			}
+		}
 
+		// ● flipX 기준 방향으로 Ray 발사 → 정확한 감지 보장
+		PlayerCheckRay();
 
-        if (rigid.linearVelocity.x < 0)
-        {
-            spriteRenderer.flipX = true;
-        }
-        else if (rigid.linearVelocity.x > 0)
-        {
-            spriteRenderer.flipX = false;
-        }
-            
-    }
+		// ● 디버그 출력
+		Debug.Log("플레이어 체크 " + isplayerchecking);
+		Debug.Log("플립 체크 " + spriteRenderer.flipX);
+	}
 
-    void PlatfromCheckRay()
-    {
-        // �ٴ� ���� ray
-        if (rigid.linearVelocity.y < 0)
-        {
-            Debug.DrawRay(transform.position, Vector2.down * 0.5f, new Color(1, 0, 0, 0.7f));
+	void PlatfromCheckRay()
+	{
+		// 바닥 감지 ray
+		if (rigid.linearVelocity.y < 0)
+		{
+			Debug.DrawRay(transform.position, Vector2.down * 0.5f, new Color(1, 0, 0, 0.7f));
 
-            dawnray = Physics2D.Raycast(transform.position, Vector2.down,
-            0.5f, LayerMask.GetMask("Platform"));
-            if (dawnray.collider != null)
-            {
-                if (dawnray.collider.gameObject.layer == 10)
-                {
-                    isjumping = false;
-                }
+			dawnray = Physics2D.Raycast(transform.position, Vector2.down,
+			0.55f, LayerMask.GetMask("Platform"));
+			if (dawnray.collider != null)
+			{
+				if (dawnray.collider.gameObject.layer == 10)
+				{
+					isjumping = false;
+				}
 
-            }
-        }
-    }
+			}
+		}
+	}
 
-    void PlayerCheckRay()
-    {
-        // �÷��̾� ���� ray, �ø����� ���׿����� ray ���� �Ǵ�
-        Vector2 xRayDirection = spriteRenderer.flipX ? Vector2.left : Vector2.right;
-        Debug.DrawRay(transform.position, xRayDirection * 5f, new Color(1, 1, 0, 0.7f));
+	void PlayerCheckRay()
+	{
+		Vector2 rayDirection;
 
-        playercheckray = Physics2D.Raycast(transform.position, xRayDirection,
-        5f, LayerMask.GetMask("Player"));
-        if (playercheckray.collider != null)
-        {
-            if (playercheckray.collider.gameObject.layer == 3)
-            {
-                isplayerchecking = true;
-            }
+		// ● 항상 flipX 기준 방향으로 시야
+		if (spriteRenderer.flipX)
+		{
+			rayDirection = Vector2.left;
+		}
+		else
+		{
+			rayDirection = Vector2.right;
+		}
 
-        }
-        else if (playercheckray.collider == null)
-        {
-            isplayerchecking = false;
-        }
-    }
+		Debug.DrawRay(transform.position, rayDirection * 5f, new Color(1, 1, 0, 0.7f));
+
+		playercheckray = Physics2D.Raycast(transform.position, rayDirection, 5f, LayerMask.GetMask("Player"));
+
+		if (playercheckray.collider != null && playercheckray.collider.gameObject.layer == 3)
+		{
+			if (!isplayerchecking)
+			{
+				isplayerchecking = true;            // ★ 먼저 true로 설정
+				CancelInvoke("EnemyMove");
+				Invoke("EnemyMove", 0.5f);          // 이제 바로 추격으로 진입함
+			}
+			else
+			{
+				isplayerchecking = true;
+			}
+		}
+		else
+		{
+			isplayerchecking = false;
+		}
+	}
 }
