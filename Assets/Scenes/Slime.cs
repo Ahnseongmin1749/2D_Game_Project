@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using System.Collections;
 
-public class Enemy_P : MonoBehaviour
+public class Slime : MonoBehaviour
 {
     Rigidbody2D rigid;
     public int nextJumpdirection;
@@ -25,7 +25,7 @@ public class Enemy_P : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
 
-        nextMoveSelect();
+        NextMoveSelect();
     }
 
     private void Start()
@@ -60,7 +60,7 @@ public class Enemy_P : MonoBehaviour
         isjumping = true;
         rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
         DirectionFlip(nextJumpdirection);
-        nextMoveSelect();
+        NextMoveSelect();
     }
 
     void EnemyAngryMove()
@@ -70,18 +70,18 @@ public class Enemy_P : MonoBehaviour
         isjumping = true;
         rigid.AddForce(new Vector2(direction * 4, 6), ForceMode2D.Impulse);
         DirectionFlip(direction);
-        nextMoveSelect();
+        NextMoveSelect();
     }
 
-    void nextMoveSelect()
+    void NextMoveSelect()
     {
 
-        if (!isplayerchecking)
+        if (!isplayerchecking && !isjumping)
         {
             int nextJumpTime = Random.Range(1, 4);
             Invoke("EnemyUsualMove", nextJumpTime);
         }
-        else if (isplayerchecking)
+        else if (isplayerchecking && !isjumping)
         {
             Invoke("EnemyAngryMove", 0.5f);
         }
@@ -131,12 +131,10 @@ public class Enemy_P : MonoBehaviour
 
         if (!seeright)
         {
-            Debug.Log("좌");
             isFlip = true;
         }
         else if (seeright)
         {
-            Debug.Log("우");
             isFlip = false;
         }
 
@@ -161,7 +159,7 @@ public class Enemy_P : MonoBehaviour
         anim.SetBool("isJumping", isjumping);
         anim.SetBool("isPlayerChecking", isplayerchecking);
 
-        
+        Debug.Log(isplayerchecking);
     }
 
     void PlatfromCheckRay()
@@ -189,14 +187,14 @@ public class Enemy_P : MonoBehaviour
         // 플레이어 감지 ray, 플립기준 삼항연산자 ray 방향 판단
         Vector2 xRayDirection = isFlip ? Vector2.left : Vector2.right;
         Debug.DrawRay(transform.position, xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
-        Debug.DrawRay(transform.position + new Vector3(0, -0.4f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
-        Debug.DrawRay(transform.position + new Vector3(0, 0.4f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
+        Debug.DrawRay(transform.position + new Vector3(0, -0.5f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
+        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
 
         Vector2[] rayOrigins = new Vector2[]
         {
         transform.position,                             // 가운데
-        transform.position + new Vector3(0, -0.4f, -1), // 아래쪽
-        transform.position + new Vector3(0,  0.4f, -1)  // 위쪽
+        transform.position + new Vector3(0, -0.5f, -1), // 아래쪽
+        transform.position + new Vector3(0,  0.5f, -1)  // 위쪽
         };
 
 
@@ -217,9 +215,10 @@ public class Enemy_P : MonoBehaviour
             {
                 if (!isplayerchecking)
                 {
+                    Debug.Log("sample");
                     isplayerchecking = true;            // ★ 먼저 true로 설정
-                    CancelInvoke("nextMoveSelect");
-                    Invoke("nextMoveSelect", 0.5f);          // 이제 바로 추격으로 진입함
+                    CancelInvoke("EnemyUsualMove");
+                    Invoke("NextMoveSelect", 0.5f);     // 이제 바로 추격으로 진입함
                 }
                 else
                 {
@@ -230,9 +229,12 @@ public class Enemy_P : MonoBehaviour
             {
                 isplayerchecking = false;
             }
+            prevPlayerChecking = isplayerchecking;
         }
-
+        
     }
+
+    
 }
 
 
