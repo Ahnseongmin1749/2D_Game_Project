@@ -46,13 +46,11 @@ public class Player_Platformer : MonoBehaviour
         //Move Animation
         if (rigid.linearVelocity.x < 0)
         {
-            isrightlooking = false;
             anim.SetBool("ismoving", true);
             anim.SetInteger("xVelocity", (int)move);
         }
         else if (rigid.linearVelocity.x > 0)
         {
-            isrightlooking = true;
             anim.SetBool("ismoving", true);
             anim.SetInteger("xVelocity", (int)move);
         }
@@ -61,9 +59,24 @@ public class Player_Platformer : MonoBehaviour
             anim.SetBool("ismoving", false);
             anim.SetInteger("xVelocity", (int)move);
         }
-
+        CheckRightLooking();
         
     }
+
+    void CheckRightLooking()
+    {
+        AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0); // 0Àº Base Layer
+
+        if (stateInfo.IsName("Left_Walk") || stateInfo.IsName("Left_Idle") || stateInfo.IsName("Left_Jump"))
+        {
+            isrightlooking = false;
+        }
+        else if (stateInfo.IsName("Right_Walk") || stateInfo.IsName("Right_Idle") || stateInfo.IsName("Right_Jump"))
+        {
+            isrightlooking = true;
+        }
+    }
+
 
     private void FixedUpdate()
     {

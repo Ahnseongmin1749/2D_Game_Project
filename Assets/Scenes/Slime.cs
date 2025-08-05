@@ -10,10 +10,10 @@ public class Slime : MonoBehaviour
     RaycastHit2D dawnray;
     RaycastHit2D playercheckray;
     bool isjumping;
-    bool isplayerchecking;
+    public bool isplayerchecking;
     bool prevPlayerChecking;
-    bool seeright;
-    bool isFlip;
+    public bool seeright;
+    public bool isFlip;
     Animator anim;
     SpriteRenderer spriteRenderer;
     public GameObject player;
@@ -131,16 +131,16 @@ public class Slime : MonoBehaviour
             isFlip = false;
         }*/
 
-        if (!seeright)
+        /*if (!seeright)
         {
             isFlip = true;
         }
         else if (seeright)
         {
             isFlip = false;
-        }
+        }*/
 
-        spriteRenderer.flipX = isFlip;
+        spriteRenderer.flipX = !seeright;
 
         /*//GPT 솔루션
         if (!prevPlayerChecking && isplayerchecking)
@@ -186,7 +186,7 @@ public class Slime : MonoBehaviour
     void PlayerCheckRay()
     {
         // 플레이어 감지 ray, 플립기준 삼항연산자 ray 방향 판단
-        Vector2 xRayDirection = isFlip ? Vector2.left : Vector2.right;
+        Vector2 xRayDirection = seeright ? Vector2.right : Vector2.left;
         Debug.DrawRay(transform.position, xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
         Debug.DrawRay(transform.position + new Vector3(0, -0.5f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
         Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
@@ -233,6 +233,11 @@ public class Slime : MonoBehaviour
             }
         }
         
+    }
+
+    public void OnDamaged(int dir)
+    {
+        rigid.AddForce(new Vector2 (dir , 1) * 6, ForceMode2D.Impulse);
     }
 
     

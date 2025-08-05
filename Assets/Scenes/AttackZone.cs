@@ -7,12 +7,14 @@ public class AttackZone : MonoBehaviour
     public GameObject weapon;
     public GameObject player;
     Player_Platformer player_P;
+    Player_State player_State;
     Collider2D col;
     bool isVisible;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         player_P = player.GetComponent<Player_Platformer>();
+        player_State = player.GetComponent<Player_State>();
         col = GetComponent<Collider2D>();
     }
 
@@ -23,7 +25,7 @@ public class AttackZone : MonoBehaviour
     IEnumerator DisableColliderTemporarily()
     {
         col.enabled = false;
-        yield return new WaitForSeconds(0.3f);
+        yield return new WaitForSeconds(0.5f);
         col.enabled = true;
     }
 
@@ -72,6 +74,17 @@ public class AttackZone : MonoBehaviour
             //col.enabled = false;
             StartCoroutine(DisableColliderTemporarily());
             Debug.Log("몬스터 피격됨: " + collision.gameObject.name);
+            Debug.Log("데미지" + player_State.atk);
+
+            int xKnockback = col.transform.position.x - player.transform.position.x > 0 ? 1 : -1;
+
+            Slime slime = collision.GetComponent<Slime>();
+            slime.OnDamaged(xKnockback);
+            if (!slime.isplayerchecking)
+            {
+                slime.seeright = !slime.seeright;
+            }
+
         }
         /*else
         {
