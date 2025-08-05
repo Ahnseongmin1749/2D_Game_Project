@@ -8,6 +8,7 @@ public class MiddleSave : MonoBehaviour
     {
         Debug.Log(midlesave);
         Debug.Log("Test");
+        Debug.Log("What the fuuuuck");
     }
 
     // Update is called once per frame
