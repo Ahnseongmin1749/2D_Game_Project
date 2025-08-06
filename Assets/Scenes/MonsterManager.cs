@@ -1,25 +1,43 @@
+using System.Threading;
 using UnityEngine;
 
 public class MonsterManager : MonoBehaviour
 {
-    public GameObject[] Monsters;
+    public GameObject[] monsters;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         
     }
 
-    public void GetWhoMonster(Collider2D col)
+    public void GetWhoMonster(Collider2D col, int dir)
     {
-        foreach (var monster in Monsters)
+        /*foreach (var monster in Monsters)
         {
-            if (monster == col.gameObject)
+            if (monster.tag == col.gameObject.tag)
             {
-                /*Debug.Log(monster.name);
-                monster.name monster = col.GetComponent<monster.name>();*/
+                MonsterBase mb = monster.GetComponentInChildren<MonsterBase>();
+                mb.TakeDamage(dir);
             }
+            else
+            {
+                Debug.Log("testDebug");
+            }
+        }*/
+
+        /*if (col.gameObject.tag == "Slime")
+        {
+            Slime slime = col.GetComponent<Slime>();
+            slime.TakeDamage(dir);
+        }*/
+
+        if (col.gameObject.tag == "Slime")
+        {
+            MonsterBase mb = col.GetComponent<MonsterBase>();
+            mb.SlimeDamage(dir);
         }
     }
+
 
 // Update is called once per frame
 void Update()

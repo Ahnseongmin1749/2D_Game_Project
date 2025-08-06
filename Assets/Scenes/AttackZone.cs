@@ -76,23 +76,29 @@ public class AttackZone : MonoBehaviour
         {
             //col.enabled = false;
             StartCoroutine(DisableColliderTemporarily());
-            Debug.Log("몬스터 피격됨: " + collision.gameObject.name);
-            Debug.Log("데미지" + player_State.atk);
 
 
 
             int xKnockback = col.transform.position.x - player.transform.position.x > 0 ? 1 : -1;
 
-            Slime slime = collision.GetComponent<Slime>();
+            /*Slime slime = collision.GetComponent<Slime>();
             slime.OnDamaged(xKnockback);
             if (!slime.isplayerchecking)
             {
                 slime.seeright = !slime.seeright;
-            }
+            }*/
 
             //Debug.Log(collision);
 
-            monster_Manager.GetWhoMonster(collision);
+            monster_Manager.GetWhoMonster(collision, xKnockback);
+
+            /*MonsterBase mb = col.GetComponent<MonsterBase>();
+            if (mb != null)
+            {
+                Debug.Log("Check");
+                mb.TakeDamage(xKnockback);
+            }*/
+
         }
         /*else
         {
