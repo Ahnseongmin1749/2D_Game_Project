@@ -1,7 +1,8 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using System.Collections;
 
-public class Slime_Fix : MonoBehaviour
+public class Slime_Fix : MonsterBase
 {
     Rigidbody2D rigid;
     public int nextJumpdirection;
@@ -90,8 +91,8 @@ public class Slime_Fix : MonoBehaviour
         PlayerCheckRay();
 
         // ● 디버그 출력
-        Debug.Log("플레이어 체크 " + isplayerchecking);
-        Debug.Log("플립 체크 " + spriteRenderer.flipX);
+        /*Debug.Log("플레이어 체크 " + isplayerchecking);
+        Debug.Log("플립 체크 " + spriteRenderer.flipX);*/
     }
 
     void PlatfromCheckRay()
@@ -148,6 +149,17 @@ public class Slime_Fix : MonoBehaviour
         else
         {
             isplayerchecking = false;
+        }
+    }
+
+    public override void SlimeDamage(int dir)
+    {
+        // 슬라임 맞는 연출
+        rigid.AddForce(new Vector2(dir, 1) * 3, ForceMode2D.Impulse);
+        Debug.Log(dir);
+        if (!isplayerchecking)
+        {
+            spriteRenderer.flipX = !spriteRenderer.flipX;
         }
     }
 }

@@ -2,7 +2,7 @@ using Unity.VisualScripting;
 using UnityEngine;
 using System.Collections;
 
-public class Slime : MonoBehaviour
+public class Slime : MonsterBase
 {
     Rigidbody2D rigid;
     public int nextJumpdirection;
@@ -235,12 +235,22 @@ public class Slime : MonoBehaviour
         
     }
 
-    public void OnDamaged(int dir)
+    /*public void OnDamaged(int dir)
     {
         rigid.AddForce(new Vector2 (dir , 1) * 6, ForceMode2D.Impulse);
+    }*/
+
+    public override void SlimeDamage(int dir)
+    {
+        // 슬라임 맞는 연출
+        rigid.AddForce(new Vector2(dir, 1) * 3, ForceMode2D.Impulse);
+        if (!isplayerchecking)
+        {
+            seeright = !seeright;
+        }
     }
 
-    
+
 }
 
 

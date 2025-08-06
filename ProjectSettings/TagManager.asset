@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Portal
   - Wall
+  - Slime
+  - test
   layers:
   - Default
   - TransparentFX
