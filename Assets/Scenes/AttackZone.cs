@@ -8,6 +8,8 @@ public class AttackZone : MonoBehaviour
     public GameObject player;
     Player_Platformer player_P;
     Player_State player_State;
+    public GameObject monsterManagerObject;
+    MonsterManager monster_Manager;
     Collider2D col;
     bool isVisible;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -16,6 +18,7 @@ public class AttackZone : MonoBehaviour
         player_P = player.GetComponent<Player_Platformer>();
         player_State = player.GetComponent<Player_State>();
         col = GetComponent<Collider2D>();
+        monster_Manager = monsterManagerObject.GetComponent<MonsterManager>();
     }
 
     private void Start()
@@ -76,6 +79,8 @@ public class AttackZone : MonoBehaviour
             Debug.Log("몬스터 피격됨: " + collision.gameObject.name);
             Debug.Log("데미지" + player_State.atk);
 
+
+
             int xKnockback = col.transform.position.x - player.transform.position.x > 0 ? 1 : -1;
 
             Slime slime = collision.GetComponent<Slime>();
@@ -85,6 +90,9 @@ public class AttackZone : MonoBehaviour
                 slime.seeright = !slime.seeright;
             }
 
+            //Debug.Log(collision);
+
+            monster_Manager.GetWhoMonster(collision);
         }
         /*else
         {

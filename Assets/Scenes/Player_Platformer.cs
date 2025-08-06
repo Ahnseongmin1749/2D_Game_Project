@@ -15,7 +15,6 @@ public class Player_Platformer : MonoBehaviour
     bool isjumping;
     RaycastHit2D ray;
 
-    AttackZone attackZone;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -23,7 +22,6 @@ public class Player_Platformer : MonoBehaviour
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
-        attackZone = GetComponent<AttackZone>();
     }
 
     // Update is called once per frame
