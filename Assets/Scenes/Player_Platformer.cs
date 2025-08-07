@@ -1,4 +1,5 @@
 using NUnit.Framework.Internal;
+using UnityEditor;
 using UnityEngine;
 
 public class Player_Platformer : MonoBehaviour
@@ -9,6 +10,7 @@ public class Player_Platformer : MonoBehaviour
     public bool isrightlooking;
     public float jump;
     bool isDamageing;
+    bool isLie;
 
     Animator anim;
     SpriteRenderer spriteRenderer;
@@ -16,7 +18,6 @@ public class Player_Platformer : MonoBehaviour
     RaycastHit2D ray;
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
@@ -27,7 +28,8 @@ public class Player_Platformer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+
+        CheckRightLooking();
 
         //Jump
         if (Input.GetButtonDown("Jump") && !isjumping)
@@ -39,6 +41,17 @@ public class Player_Platformer : MonoBehaviour
         //Jump Animation
         anim.SetBool("isJump", isjumping);
         
+        //Lie Animation
+        if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            isLie = true;
+            anim.SetBool("isLie",isLie);
+        }
+        else if (Input.GetKeyUp(KeyCode.DownArrow))
+        {
+            isLie = false;
+            anim.SetBool("isLie", isLie);
+        }
 
 
         //Move Animation
@@ -57,7 +70,7 @@ public class Player_Platformer : MonoBehaviour
             anim.SetBool("ismoving", false);
             anim.SetInteger("xVelocity", (int)move);
         }
-        CheckRightLooking();
+        
         
     }
 
@@ -65,13 +78,17 @@ public class Player_Platformer : MonoBehaviour
     {
         AnimatorStateInfo stateInfo = anim.GetCurrentAnimatorStateInfo(0); // 0Àº Base Layer
 
-        if (stateInfo.IsName("Left_Walk") || stateInfo.IsName("Left_Idle") || stateInfo.IsName("Left_Jump"))
+        if (stateInfo.IsName("Left_Walk") || stateInfo.IsName("Left_Idle") || stateInfo.IsName("Left_Jump") ||
+            stateInfo.IsName("Left_Lie") || stateInfo.IsName("Left_Crawl"))
         {
             isrightlooking = false;
+            anim.SetBool("isRight", isrightlooking);
         }
-        else if (stateInfo.IsName("Right_Walk") || stateInfo.IsName("Right_Idle") || stateInfo.IsName("Right_Jump"))
+        else if (stateInfo.IsName("Right_Walk") || stateInfo.IsName("Right_Idle") || stateInfo.IsName("Right_Jump") ||
+            stateInfo.IsName("Right_Lie") || stateInfo.IsName("Right_Crawl"))
         {
             isrightlooking = true;
+            anim.SetBool("isRight", isrightlooking);
         }
     }
 
@@ -83,7 +100,12 @@ public class Player_Platformer : MonoBehaviour
         {
             move = Input.GetAxisRaw("Horizontal");
 
-            rigid.linearVelocity = new Vector2(move * speed, rigid.linearVelocity.y);
+            float adjustedSpeed = isLie ? speed * 0.5f : speed;
+
+
+            rigid.linearVelocity = new Vector2(move * adjustedSpeed, rigid.linearVelocity.y);
+
+            Debug.Log(rigid.linearVelocity);
         }
         
 
