@@ -12,6 +12,8 @@ public class AttackZone : MonoBehaviour
     MonsterManager monster_Manager;
     Collider2D col;
     bool isVisible;
+    bool isAttack;
+    bool tryAttack;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
@@ -28,14 +30,23 @@ public class AttackZone : MonoBehaviour
     IEnumerator DisableColliderTemporarily()
     {
         col.enabled = false;
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.7f);
         col.enabled = true;
+    }
+
+    IEnumerator FalseAttack()
+    {
+        isAttack = true;
+        yield return new WaitForSeconds(0.7f);
+        isAttack = false;
     }
 
     // Update is called once per frame
     void Update()
     {
         weapon.SetActive(isVisible);
+
+        
 
         Vector3 vec;
         if (player_P.isrightlooking)
@@ -48,11 +59,20 @@ public class AttackZone : MonoBehaviour
         }
         transform.position = player.transform.position + vec;
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        /*if (Input.GetKeyDown(KeyCode.Q))
         {
             gameObject.SetActive(true);
+        }*/
+
+        if (Input.GetKeyDown(KeyCode.Q) && !isAttack)
+        {
+            tryAttack = true;
+
+            StartCoroutine(FalseAttack());
         }
 
+        Debug.Log(isAttack);
+        player_P.anim.SetBool("isAttack", isAttack);
 
     }
 
@@ -72,11 +92,11 @@ public class AttackZone : MonoBehaviour
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.layer == 6 && Input.GetKey(KeyCode.Q)) // 몬스터 태그 확인
+        if (collision.gameObject.layer == 6 && tryAttack) // 몬스터 태그 확인
         {
-            //col.enabled = false;
-            StartCoroutine(DisableColliderTemporarily());
+            tryAttack = false;
 
+            StartCoroutine(DisableColliderTemporarily());
 
 
             int xKnockback = col.transform.position.x - player.transform.position.x > 0 ? 1 : -1;

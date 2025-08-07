@@ -12,7 +12,7 @@ public class Player_Platformer : MonoBehaviour
     bool isDamageing;
     bool isLie;
 
-    Animator anim;
+    public Animator anim;
     SpriteRenderer spriteRenderer;
     bool isjumping;
     RaycastHit2D ray;
@@ -104,8 +104,6 @@ public class Player_Platformer : MonoBehaviour
 
 
             rigid.linearVelocity = new Vector2(move * adjustedSpeed, rigid.linearVelocity.y);
-
-            Debug.Log(rigid.linearVelocity);
         }
         
 

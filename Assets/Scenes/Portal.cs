@@ -5,6 +5,7 @@ public class Portal : MonoBehaviour
 {
     public int portal_id;
     public MapManager mapManager;
+    bool tryPortal;
     
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -15,25 +16,24 @@ public class Portal : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if (Input.GetButtonDown("Interaction"))
+        {
+            tryPortal = true;
+        }
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        if (collision.gameObject.tag == "Player")
+        if (collision.gameObject.tag == "Player" && tryPortal)
         {
-            
-            if (Input.GetButtonUp("Interaction"))
-            {
-                Debug.Log("c2");
-                GameObject currentmap = mapManager.GetCurrentMap(portal_id);
-                GameObject targetmap = mapManager.GetTargetMap(portal_id);
-                Debug.Log(currentmap);
-                Debug.Log(targetmap);
-                currentmap.SetActive(false);
-                targetmap.SetActive(true);
-            }
-
+            tryPortal = false;
+            Debug.Log("c2");
+            GameObject currentmap = mapManager.GetCurrentMap(portal_id);
+            GameObject targetmap = mapManager.GetTargetMap(portal_id);
+            Debug.Log(currentmap);
+            Debug.Log(targetmap);
+            currentmap.SetActive(false);
+            targetmap.SetActive(true);
 
         }
     }
