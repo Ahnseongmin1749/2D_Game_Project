@@ -25,7 +25,6 @@ public class AttackZone : MonoBehaviour
 
     private void Start()
     {
-        isVisible = false;
     }
     IEnumerator DisableColliderTemporarily()
     {
@@ -44,7 +43,6 @@ public class AttackZone : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        weapon.SetActive(isVisible);
 
         
 
@@ -71,7 +69,6 @@ public class AttackZone : MonoBehaviour
             StartCoroutine(FalseAttack());
         }
 
-        Debug.Log(isAttack);
         player_P.anim.SetBool("isAttack", isAttack);
 
     }

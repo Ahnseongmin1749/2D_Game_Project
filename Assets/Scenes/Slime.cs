@@ -4,6 +4,7 @@ using System.Collections;
 
 public class Slime : MonsterBase
 {
+    float HP = 100;
     Rigidbody2D rigid;
     public int nextJumpdirection;
     public int nextJumpTime;
@@ -18,19 +19,43 @@ public class Slime : MonsterBase
     SpriteRenderer spriteRenderer;
     public GameObject player;
 
+    public GameObject AttackEffect;
+    Animator subanim;
+
+    public GameObject healthBarPrefab; // 이걸 유니티에서 연결해줘 (MonsterHealthBar 프리팹)
+    Transform healthBar;
+
 
     private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
-
+        subanim = AttackEffect.GetComponent<Animator>();
+        gameObject.SetActive(true);
         NextMoveSelect();
     }
 
     private void Start()
     {
-        //EnemyMove();
+        HP_UI_Setting();
+    }
+
+    void HP_UI_Setting()
+    {
+        // 프리팹 복사해서 생성
+        GameObject bar = Instantiate(healthBarPrefab);
+
+        // 부모를 이 몬스터로 설정 (머리 위에 따라오게 함)
+        bar.transform.SetParent(transform);
+
+        // 머리 위에 위치 조정 (y를 조금 올림)
+        bar.transform.localPosition = new Vector3(0, 1, 0); // 몬스터 크기에 따라 조절
+        /*localPosition은 부모(몬스터) 기준의 위치
+        position은 월드(전체 맵) 기준의 위치*/
+
+        // 카메라 쪽을 보게 하려면 따로 LookAt 처리 필요
+        healthBar = bar.transform;
     }
 
     /*void EnemyMove()
@@ -161,6 +186,25 @@ public class Slime : MonsterBase
         anim.SetBool("isJumping", isjumping);
         anim.SetBool("isPlayerChecking", isplayerchecking);
 
+
+        HP_UI_Update();
+        Die_Slime();
+    }
+
+    void HP_UI_Update()
+    {
+        // 예시: 체력 줄어들 때 fillAmount 조절
+        // bar.transform.GetChild(0)는 HPFill Image
+        float hpRatio = HP / 100f;
+        healthBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
+    }
+
+    void Die_Slime()
+    {
+        if (HP <= 0)
+        {
+            gameObject.SetActive(false);
+        }
     }
 
     void PlatfromCheckRay()
@@ -248,6 +292,10 @@ public class Slime : MonsterBase
         {
             seeright = !seeright;
         }
+        subanim.SetTrigger("isDamaging");
+
+        Player_State player_State = player.GetComponent<Player_State>();
+        HP -= player_State.atk;
     }
 
 

@@ -115,10 +115,10 @@ TextureImporter:
       name: attack_effect-Sheet_0
       rect:
         serializedVersion: 2
-        x: 11
-        y: 4
-        width: 21
-        height: 8
+        x: 0
+        y: 0
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -137,10 +137,10 @@ TextureImporter:
       name: attack_effect-Sheet_1
       rect:
         serializedVersion: 2
-        x: 39
-        y: 1
-        width: 10
-        height: 11
+        x: 17
+        y: 0
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -159,10 +159,10 @@ TextureImporter:
       name: attack_effect-Sheet_2
       rect:
         serializedVersion: 2
-        x: 54
+        x: 34
         y: 0
-        width: 11
-        height: 10
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -181,10 +181,10 @@ TextureImporter:
       name: attack_effect-Sheet_3
       rect:
         serializedVersion: 2
-        x: 69
+        x: 51
         y: 0
-        width: 11
-        height: 7
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -203,10 +203,10 @@ TextureImporter:
       name: attack_effect-Sheet_4
       rect:
         serializedVersion: 2
-        x: 85
+        x: 68
         y: 0
-        width: 38
-        height: 6
+        width: 16
+        height: 16
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -221,11 +221,77 @@ TextureImporter:
       indices: 
       edges: []
       weights: []
+    - serializedVersion: 2
+      name: attack_effect-Sheet_5
+      rect:
+        serializedVersion: 2
+        x: 85
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 106b716aa0bee7a49a2dae7b672b7e1d
+      internalID: 1716396092
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: attack_effect-Sheet_6
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 03b5e17fd7d0a624084a77e731136504
+      internalID: -1200418042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: attack_effect-Sheet_7
+      rect:
+        serializedVersion: 2
+        x: 119
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: dde830bb42a9dcd4ba4c71b0f721b040
+      internalID: -1060797227
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
     outline: []
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 6f5a20b7648f90a43acb24ee853c604d
     internalID: 0
     vertices: []
     indices: 
@@ -240,6 +306,9 @@ TextureImporter:
       attack_effect-Sheet_2: -8335461079028053250
       attack_effect-Sheet_3: -7553485775996568683
       attack_effect-Sheet_4: -6524909984895070862
+      attack_effect-Sheet_5: 1716396092
+      attack_effect-Sheet_6: -1200418042
+      attack_effect-Sheet_7: -1060797227
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

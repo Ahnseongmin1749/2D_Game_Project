@@ -9,10 +9,10 @@ public class Weapon_Manager : MonoBehaviour
     void Awake()
     {
         weapon_strength = new Dictionary<GameObject, int>();
-        Weapon_Add();
+        Weapon_Atk_Add();
     }
 
-    void Weapon_Add()
+    void Weapon_Atk_Add()
     {
         weapon_strength.Add(weapons[0], 1);
         weapon_strength.Add(weapons[1], 10);
@@ -23,10 +23,16 @@ public class Weapon_Manager : MonoBehaviour
         
     }
 
-    public float Get_Weapon(int weapon_index)
+    public float Get_Weapon_Atk(int weapon_index)
     {
         return weapon_strength[weapons[weapon_index]];
     }
+
+    public GameObject Visible_Weapon(int weapon_index)
+    {
+        return weapons[weapon_index];
+    }
+
     // Update is called once per frame
     void Update()
     {
