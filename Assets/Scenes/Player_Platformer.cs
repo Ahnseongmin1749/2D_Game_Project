@@ -121,7 +121,6 @@ public class Player_Platformer : MonoBehaviour
     {
         if (collision != null && collision.gameObject.layer == 10)
         {
-            Debug.Log("CHeck");
             //FrontCheckRay
             FrontCheckRay();
         }
@@ -168,7 +167,6 @@ public class Player_Platformer : MonoBehaviour
             {
                 if (frontray.collider.gameObject.layer == 10)
                 {
-                    Debug.Log("check");
                     rigid.AddForce(new Vector2(0, -0.3f), ForceMode2D.Impulse);
                     isAttachWall = true;
                 }

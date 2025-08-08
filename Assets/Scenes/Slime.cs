@@ -1,6 +1,8 @@
+using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
-using System.Collections;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+using static UnityEngine.UI.Image;
 
 public class Slime : MonsterBase
 {
@@ -26,6 +28,8 @@ public class Slime : MonsterBase
     Transform healthBar;
 
     CircleCollider2D circleCollider;
+
+    bool tryInvoke;
 
 
     private void Awake()
@@ -105,7 +109,6 @@ public class Slime : MonsterBase
 
     void NextMoveSelect()
     {
-
         if (!isplayerchecking)
         {
             int nextJumpTime = Random.Range(1, 4);
@@ -138,52 +141,7 @@ public class Slime : MonsterBase
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
 
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        // 바닥 감지 Ray 함수
-        PlatfromCheckRay();
-
-        // 플레이어 감지 Ray 함수
-        PlayerCheckRay();
-
-        
-        /*if (rigid.linearVelocity.x < 0)
-        {
-            Debug.Log("좌");
-            isFlip = true;
-        }
-        else if (rigid.linearVelocity.x > 0)
-        {
-            Debug.Log("우");
-            isFlip = false;
-        }*/
-
-        /*if (!seeright)
-        {
-            isFlip = true;
-        }
-        else if (seeright)
-        {
-            isFlip = false;
-        }*/
-
-        spriteRenderer.flipX = !seeright;
-
-        /*//GPT 솔루션
-        if (!prevPlayerChecking && isplayerchecking)
-        {
-            Debug.Log("플레이어 발견! 공격 전환");
-            CancelInvoke("EnemyUsualMove");
-            CancelInvoke("nextMoveSelect");
-            EnemyAngryMove(); // 단발 호출
-        }
-
-        // 상태 업데이트는 반드시 마지막에!
-        prevPlayerChecking = isplayerchecking;*/
-
-
-    }
+    
     void Update()
     {
         anim.SetBool("isJumping", isjumping);
@@ -192,6 +150,15 @@ public class Slime : MonsterBase
 
         HP_UI_Update();
         Die_Effect_Slime();
+
+        
+        /*if (isplayerchecking != prevPlayerChecking)
+        {
+            Debug.Log("Trun");
+            CancelInvoke();
+            EnemyAngryMove();
+        }
+        prevPlayerChecking = isplayerchecking;*/
     }
 
     void HP_UI_Update()
@@ -221,6 +188,21 @@ public class Slime : MonsterBase
         gameObject.SetActive(false);
     }
 
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        // 바닥 감지 Ray 함수
+        PlatfromCheckRay();
+
+        // 플레이어 감지 Ray 함수
+        PlayerCheckRay();
+
+
+
+        spriteRenderer.flipX = !seeright;
+
+    }
+
     void PlatfromCheckRay()
     {
         // 바닥 감지 ray
@@ -244,40 +226,33 @@ public class Slime : MonsterBase
     void PlayerCheckRay()
     {
         // 플레이어 감지 ray, 플립기준 삼항연산자 ray 방향 판단
-        Vector2 xRayDirection = seeright ? Vector2.right : Vector2.left;
+        Vector3 xRayDirection = seeright ? Vector2.right : Vector2.left;
         Debug.DrawRay(transform.position, xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
-        Debug.DrawRay(transform.position + new Vector3(0, -0.5f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
-        Debug.DrawRay(transform.position + new Vector3(0, 0.5f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
+        Debug.DrawRay(transform.position + new Vector3(0, -0.3f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
+        Debug.DrawRay(transform.position + new Vector3(0, 0.3f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
 
         Vector2[] rayOrigins = new Vector2[]
         {
         transform.position,                             // 가운데
-        transform.position + new Vector3(0, -0.5f, -1), // 아래쪽
-        transform.position + new Vector3(0,  0.5f, -1)  // 위쪽
+        transform.position + new Vector3(0, -0.3f, -1), // 아래쪽
+        transform.position + new Vector3(0,  0.3f, -1)  // 위쪽
         };
 
 
         foreach (Vector3 rayOrigin in rayOrigins)
         {
             playercheckray = Physics2D.Raycast(rayOrigin, xRayDirection, 7f, LayerMask.GetMask("Player"));
-            /*if (playercheckray.collider != null)
-            {
-                if (playercheckray.collider.gameObject.layer == 3)
-                {
-                    isplayerchecking = true;
-                    
-                }
-
-            }*/
 
             if (playercheckray.collider != null && playercheckray.collider.gameObject.layer == 3)
             {
                 /*if (!isplayerchecking)
                 {
-                    Debug.Log("sample");
-                    isplayerchecking = true;            // ★ 먼저 true로 설정
-                    CancelInvoke("NextMoveSelect");
-                    Invoke("NextMoveSelect", 0.5f);     // 이제 바로 추격으로 진입함
+                    isplayerchecking = true; // ★ 먼저 true로 설정
+
+
+                    tryInvoke = true;
+                    InvokeControl();
+
                 }
                 else
                 {
@@ -290,8 +265,24 @@ public class Slime : MonsterBase
                 isplayerchecking = false;
             }
         }
+
         
     }
+    
+
+    void InvokeControl()
+    {
+        if (tryInvoke)
+        {
+            CancelInvoke("NextMoveSelect");
+            Invoke("NextMoveSelect", 0.5f);
+
+            tryInvoke = false;
+        }
+    }
+
+
+
 
     /*public void OnDamaged(int dir)
     {
