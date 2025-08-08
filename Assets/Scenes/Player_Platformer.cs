@@ -1,4 +1,5 @@
 using NUnit.Framework.Internal;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -15,7 +16,9 @@ public class Player_Platformer : MonoBehaviour
     public Animator anim;
     SpriteRenderer spriteRenderer;
     bool isjumping;
-    RaycastHit2D ray;
+    bool isAttachWall;
+    RaycastHit2D downray;
+    RaycastHit2D frontray;
 
 
     void Awake()
@@ -96,7 +99,7 @@ public class Player_Platformer : MonoBehaviour
     private void FixedUpdate()
     {
         //Move
-        if (!isDamageing)
+        if (!isDamageing && !isAttachWall)
         {
             move = Input.GetAxisRaw("Horizontal");
 
@@ -105,26 +108,78 @@ public class Player_Platformer : MonoBehaviour
 
             rigid.linearVelocity = new Vector2(move * adjustedSpeed, rigid.linearVelocity.y);
         }
-        
 
-        //Ray
+
+
+        //JumpCheckRay
+        JumpCheckFunc();
+        
+    }
+
+
+    private void OnCollisionStay2D(Collision2D collision)
+    {
+        if (collision != null && collision.gameObject.layer == 10)
+        {
+            Debug.Log("CHeck");
+            //FrontCheckRay
+            FrontCheckRay();
+        }
+    }
+
+    void JumpCheckFunc()
+    {
         if (rigid.linearVelocity.y < 0)
         {
             Debug.DrawRay(transform.position, Vector2.down * 1, new Color(1, 0, 0, 0.7f));
 
-            ray = Physics2D.Raycast(transform.position, Vector2.down,
+            downray = Physics2D.Raycast(transform.position, Vector2.down,
             1, LayerMask.GetMask("Platform"));
-            if (ray.collider != null)
+            if (downray.collider != null)
             {
-                if (ray.collider.gameObject.layer == 10)
+                if (downray.collider.gameObject.layer == 10)
                 {
                     isjumping = false;
+                    isAttachWall = false;
                 }
 
             }
         }
-
     }
+
+    void FrontCheckRay()
+    {
+        Vector2 xRayDirection = isrightlooking ? Vector2.right : Vector2.left;
+        Debug.DrawRay(transform.position, xRayDirection * 1, new Color(0, 1, 0, 0.7f));
+        Debug.DrawRay(transform.position + new Vector3(0, 0.3f, 0), xRayDirection * 1, new Color(0, 1, 0, 0.7f));
+        Debug.DrawRay(transform.position + new Vector3(0, -0.3f, 0) * 1, xRayDirection, new Color(0, 1, 0, 0.7f));
+
+        Vector2[] rayOrigins = new Vector2[]
+        {
+            transform.position,
+            transform.position + new Vector3(0, 0.3f, 0),
+            transform.position + new Vector3(0, -0.3f, 0)
+        };
+
+        foreach (Vector3 rayOrigin in rayOrigins)
+        {
+            frontray = Physics2D.Raycast(rayOrigin, xRayDirection, 1, LayerMask.GetMask("Platform"));
+            if (frontray.collider != null)
+            {
+                if (frontray.collider.gameObject.layer == 10)
+                {
+                    Debug.Log("check");
+                    rigid.AddForce(new Vector2(0, -0.3f), ForceMode2D.Impulse);
+                    isAttachWall = true;
+                }
+
+            }
+
+        }
+
+        
+    }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

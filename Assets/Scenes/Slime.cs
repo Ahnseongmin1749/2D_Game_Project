@@ -25,6 +25,8 @@ public class Slime : MonsterBase
     public GameObject healthBarPrefab; // 이걸 유니티에서 연결해줘 (MonsterHealthBar 프리팹)
     Transform healthBar;
 
+    CircleCollider2D circleCollider;
+
 
     private void Awake()
     {
@@ -32,6 +34,7 @@ public class Slime : MonsterBase
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         subanim = AttackEffect.GetComponent<Animator>();
+        circleCollider = GetComponent<CircleCollider2D>();
         gameObject.SetActive(true);
         NextMoveSelect();
     }
@@ -188,7 +191,7 @@ public class Slime : MonsterBase
 
 
         HP_UI_Update();
-        Die_Slime();
+        Die_Effect_Slime();
     }
 
     void HP_UI_Update()
@@ -199,12 +202,23 @@ public class Slime : MonsterBase
         healthBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
     }
 
-    void Die_Slime()
+    void Die_Effect_Slime()
     {
         if (HP <= 0)
         {
-            gameObject.SetActive(false);
+            CancelInvoke("NextMoveSelect");
+            spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f);
+            spriteRenderer.flipY = true;
+            circleCollider.enabled = false;
+
+            Invoke("Disappear_Slime", 3);
         }
+    }
+
+    void Disappear_Slime()
+    {
+        circleCollider.enabled = false;
+        gameObject.SetActive(false);
     }
 
     void PlatfromCheckRay()

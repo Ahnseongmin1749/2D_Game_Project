@@ -27,7 +27,6 @@ public class Portal : MonoBehaviour
         if (collision.gameObject.tag == "Player" && tryPortal)
         {
             tryPortal = false;
-            Debug.Log("c2");
             GameObject currentmap = mapManager.GetCurrentMap(portal_id);
             GameObject targetmap = mapManager.GetTargetMap(portal_id);
             Debug.Log(currentmap);
