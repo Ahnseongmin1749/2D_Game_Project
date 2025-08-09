@@ -3,7 +3,7 @@ using UnityEngine.UIElements;
 
 public class MonsterBase : MonoBehaviour
 {
-    
+    public float monster_atk;
 
     void Start()
     {

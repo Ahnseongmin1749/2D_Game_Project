@@ -9,9 +9,6 @@ public class Player : MonoBehaviour
     private bool isHorizontal;
     SpriteRenderer spriteRenderer;
 
-    public GameObject Village;
-    public GameObject WildMap;
-
     Animator anim;
     
     void Awake()

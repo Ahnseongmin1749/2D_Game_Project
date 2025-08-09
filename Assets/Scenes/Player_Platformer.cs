@@ -20,13 +20,20 @@ public class Player_Platformer : MonoBehaviour
     RaycastHit2D downray;
     RaycastHit2D frontray;
 
+    Player_State state;
+
 
     void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        state = GetComponent<Player_State>();
+        
     }
+
+    
+
 
     // Update is called once per frame
     void Update()
@@ -148,32 +155,36 @@ public class Player_Platformer : MonoBehaviour
 
     void FrontCheckRay()
     {
-        Vector2 xRayDirection = isrightlooking ? Vector2.right : Vector2.left;
-        Debug.DrawRay(transform.position, xRayDirection * 1, new Color(0, 1, 0, 0.7f));
-        Debug.DrawRay(transform.position + new Vector3(0, 0.3f, 0), xRayDirection * 1, new Color(0, 1, 0, 0.7f));
-        Debug.DrawRay(transform.position + new Vector3(0, -0.3f, 0) * 1, xRayDirection, new Color(0, 1, 0, 0.7f));
-
-        Vector2[] rayOrigins = new Vector2[]
+        if (isjumping)
         {
+            Vector2 xRayDirection = isrightlooking ? Vector2.right : Vector2.left;
+            Debug.DrawRay(transform.position, xRayDirection * 1, new Color(0, 1, 0, 0.7f));
+            Debug.DrawRay(transform.position + new Vector3(0, 0.3f, 0), xRayDirection * 1, new Color(0, 1, 0, 0.7f));
+            Debug.DrawRay(transform.position + new Vector3(0, -0.3f, 0) * 1, xRayDirection, new Color(0, 1, 0, 0.7f));
+
+            Vector2[] rayOrigins = new Vector2[]
+            {
             transform.position,
             transform.position + new Vector3(0, 0.3f, 0),
             transform.position + new Vector3(0, -0.3f, 0)
-        };
+            };
 
-        foreach (Vector3 rayOrigin in rayOrigins)
-        {
-            frontray = Physics2D.Raycast(rayOrigin, xRayDirection, 1, LayerMask.GetMask("Platform"));
-            if (frontray.collider != null)
+            foreach (Vector3 rayOrigin in rayOrigins)
             {
-                if (frontray.collider.gameObject.layer == 10)
+                frontray = Physics2D.Raycast(rayOrigin, xRayDirection, 1, LayerMask.GetMask("Platform"));
+                if (frontray.collider != null)
                 {
-                    rigid.AddForce(new Vector2(0, -0.3f), ForceMode2D.Impulse);
-                    isAttachWall = true;
+                    if (frontray.collider.gameObject.layer == 10)
+                    {
+                        rigid.AddForce(new Vector2(0, -0.1f), ForceMode2D.Impulse);
+                        isAttachWall = true;
+                    }
+
                 }
 
             }
-
         }
+        
 
         
     }
@@ -197,6 +208,12 @@ public class Player_Platformer : MonoBehaviour
         int xKnockback = transform.position.x - col.transform.position.x > 0 ? 1 : -1;
         rigid.AddForce(new Vector2(xKnockback, 1) * 7, ForceMode2D.Impulse);
         isDamageing = true;
+
+        //피격시 체력감소
+        MonsterBase monster = col.gameObject.GetComponent<MonsterBase>();
+        state.hp -= monster.monster_atk;
+
+
 
         Invoke("EndDamaged", 0.3f);
     }

@@ -1,7 +1,11 @@
 using UnityEngine;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+using static UnityEngine.UI.Image;
 
 public class Player_State : MonoBehaviour
 {
+    public bool isTopdown;
+    Rigidbody2D rigid;
     Player_Platformer plyaer_Platformer;
     public GameObject Weapon_Manager;
     Weapon_Manager Weapon_Manager_s;
@@ -10,19 +14,23 @@ public class Player_State : MonoBehaviour
     public float speed;
     public float atk;
     public float def;
-
+    public GameObject attackZone;
     GameObject weapon;
     SpriteRenderer w_spriteRenderer;
+
+    public Transform PlayerHPBar;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+        rigid = GetComponent<Rigidbody2D>();
         Weapon_Manager_s = Weapon_Manager.GetComponent<Weapon_Manager>();
         plyaer_Platformer= GetComponent<Player_Platformer>();
 
         weapon = Weapon_Manager_s.Visible_Weapon(weapon_index);
         w_spriteRenderer = weapon.GetComponent<SpriteRenderer>();
 
+        
     }
 
     private void Start()
@@ -30,6 +38,8 @@ public class Player_State : MonoBehaviour
         
         float plus_atk = Weapon_Manager_s.Get_Weapon_Atk(weapon_index);
         atk += plus_atk;
+        isTopdown = true;
+        AttackZoneSetting();
     }
 
     // Update is called once per frame
@@ -47,8 +57,49 @@ public class Player_State : MonoBehaviour
             w_spriteRenderer.flipX = false;
         }
         weapon.transform.position = transform.position + vec;
+
+        float hpRatio = hp / 100f;
+        PlayerHPBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
+
+        Debug.Log(isTopdown);
+    }
+
+    public void RigidSetting()
+    {
+        if (isTopdown)
+        {
+            rigid.mass = 1;
+            rigid.linearDamping = 0;
+            rigid.angularDamping = 0.05f;
+            rigid.gravityScale = 0;
+        }
+        else if (!isTopdown)
+        {
+            rigid.mass = 0.8f;
+            rigid.linearDamping = 2;
+            rigid.angularDamping = 0.05f;
+            rigid.gravityScale = 3;
+        }
+    }
+
+    public void AttackZoneSetting()
+    {
+        if (isTopdown)
+        {
+            attackZone.SetActive(false);
+            Debug.Log("없어져라");
+        }
+
+
+        else if (!isTopdown)
+        {
+            attackZone.SetActive(true);
+            Debug.Log("나타나라");
+        }
     }
 }
+
+
 
 /*int prev_weapon_index = -1;
 

@@ -16,6 +16,9 @@ public class MapManager : MonoBehaviour
     {
         PortalData.Add(1, new GameObject[] { map_arr[0], map_arr[1] });
         PortalData.Add(2, new GameObject[] { map_arr[1], map_arr[0] });
+
+        PortalData.Add(3, new GameObject[] { map_arr[1], map_arr[2] });
+        PortalData.Add(4, new GameObject[] { map_arr[2], map_arr[1] });
     }
 
     public GameObject GetCurrentMap(int id)

@@ -21,6 +21,7 @@ public class AttackZone : MonoBehaviour
         player_State = player.GetComponent<Player_State>();
         col = GetComponent<Collider2D>();
         monster_Manager = monsterManagerObject.GetComponent<MonsterManager>();
+        isAttack = false;
     }
 
     private void Start()

@@ -39,12 +39,14 @@ public class Slime : MonsterBase
         anim = GetComponent<Animator>();
         subanim = AttackEffect.GetComponent<Animator>();
         circleCollider = GetComponent<CircleCollider2D>();
+
         gameObject.SetActive(true);
         NextMoveSelect();
     }
 
     private void Start()
     {
+        monster_atk = 10;
         HP_UI_Setting();
     }
 
