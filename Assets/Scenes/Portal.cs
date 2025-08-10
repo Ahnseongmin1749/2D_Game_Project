@@ -7,16 +7,16 @@ public class Portal : MonoBehaviour
     public MapManager mapManager;
     bool tryPortal;
 
-    public GameObject player;
+    /*public GameObject player;
     public Animator animator;
     public RuntimeAnimatorController topDownAnimator;
     public RuntimeAnimatorController platformerAnimator;
-    Player_State state;
+    Player_State state;*/
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        state = player.GetComponent<Player_State>();
+        
     }
 
     // Update is called once per frame
@@ -38,20 +38,23 @@ public class Portal : MonoBehaviour
             currentmap.SetActive(false);
             targetmap.SetActive(true);
 
-            if (portal_id == 1)
+
+            mapManager.CheckCurrentMap();
+
+            /*if (portal_id == 1)
             {
                 SwitchToPlatformer();
             }
             else if (portal_id == 2)
             {
                 SwitchToTopDown();
-            }
+            }*/
 
         }
     }
 
     // 포탈 스크립트 예시
-    void SwitchToTopDown()
+    /*void SwitchToTopDown()
     {
         animator.runtimeAnimatorController = topDownAnimator;
         player.GetComponent<Player>().enabled = true;
@@ -69,5 +72,5 @@ public class Portal : MonoBehaviour
         state.isTopdown = false;
         state.RigidSetting();
         state.AttackZoneSetting();
-    }
+    }*/
 }

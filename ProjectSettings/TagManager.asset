@@ -8,6 +8,8 @@ TagManager:
   - Wall
   - Slime
   - test
+  - Village
+  - Wild
   layers:
   - Default
   - TransparentFX
