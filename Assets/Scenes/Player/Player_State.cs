@@ -61,7 +61,6 @@ public class Player_State : MonoBehaviour
         float hpRatio = hp / 100f;
         PlayerHPBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
 
-        Debug.Log(isTopdown);
     }
 
     public void RigidSetting()
@@ -87,14 +86,14 @@ public class Player_State : MonoBehaviour
         if (isTopdown)
         {
             attackZone.SetActive(false);
-            Debug.Log("없어져라");
+            
         }
 
 
         else if (!isTopdown)
         {
             attackZone.SetActive(true);
-            Debug.Log("나타나라");
+            
         }
     }
 }

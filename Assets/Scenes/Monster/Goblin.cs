@@ -7,14 +7,13 @@ using static UnityEngine.UI.Image;
 public class Goblin : MonsterBase
 {
     float HP = 100;
+    float direction;
     Rigidbody2D rigid;
     public int nextJumpdirection;
     public int nextJumpTime;
     RaycastHit2D dawnray;
     RaycastHit2D playercheckray;
-    bool isjumping;
     public bool isplayerchecking;
-    bool prevPlayerChecking;
     public bool seeright;
     public bool isFlip;
     Animator anim;
@@ -27,9 +26,7 @@ public class Goblin : MonsterBase
     public GameObject healthBarPrefab; // 이걸 유니티에서 연결해줘 (MonsterHealthBar 프리팹)
     Transform healthBar;
 
-    CircleCollider2D circleCollider;
-
-    bool tryInvoke;
+    CapsuleCollider2D capsuleCollider;
 
 
     private void Awake()
@@ -38,10 +35,11 @@ public class Goblin : MonsterBase
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
         subanim = AttackEffect.GetComponent<Animator>();
-        circleCollider = GetComponent<CircleCollider2D>();
+        capsuleCollider = GetComponent<CapsuleCollider2D>();
 
         gameObject.SetActive(true);
-        NextMoveSelect();
+
+        EnemyMoveDirection();
     }
 
     private void Start()
@@ -67,58 +65,56 @@ public class Goblin : MonsterBase
         healthBar = bar.transform;
     }
 
-    /*void EnemyMove()
+
+    void EnemyMoveDirection()
     {
-        if (!isjumping && !isplayerchecking)
-        {
-            nextJumpdirection = Random.Range(-1, 2);
-            nextJumpTime = Random.Range(1, 4);
-            isjumping = true;
-            rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
-            DirectionFlip(nextJumpdirection);
-            Invoke("EnemyMove", nextJumpTime);
+        direction = isplayerchecking ? Mathf.Sign(player.transform.position.x - transform.position.x) :
+            Random.Range(-1, 2);
 
-        }
-        else if (!isjumping && isplayerchecking)
-        {
-            Debug.Log("왜 안오노");
-            int direction = (int)Mathf.Sign(player.transform.position.x - transform.position.x);
-            isjumping = true;
-            rigid.AddForce(new Vector2(direction * 3, 5), ForceMode2D.Impulse);
-            DirectionFlip(direction);
-            Invoke("EnemyMove", 0.5f);
-        }
-    }*/
+        float invoketime = Random.Range(3, 6);
 
-    void EnemyUsualMove()
-    {
-        float nextJumpdirection = Random.Range(-1, 2);
-
-        isjumping = true;
-        rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
-        DirectionFlip(nextJumpdirection);
-        NextMoveSelect();
+        Invoke("EnemyMoveDirection", invoketime);
     }
 
-    void EnemyAngryMove()
+    
+
+    
+
+
+
+    void Update()
     {
-        float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
-        isjumping = true;
-        rigid.AddForce(new Vector2(direction * 4, 5), ForceMode2D.Impulse);
+
+
+        HP_UI_Update();
+        Die_Effect_Goblin();
+
+        
+
         DirectionFlip(direction);
-        NextMoveSelect();
+
+        anim.SetInteger("xVelocity", (int)direction);
+        anim.SetBool("seeRight", seeright);
     }
 
-    void NextMoveSelect()
+    void HP_UI_Update()
     {
-        if (!isplayerchecking)
+        // 예시: 체력 줄어들 때 fillAmount 조절
+        // bar.transform.GetChild(0)는 HPFill Image
+        float hpRatio = HP / 100f;
+        healthBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
+    }
+
+    void Die_Effect_Goblin()
+    {
+        if (HP <= 0)
         {
-            int nextJumpTime = Random.Range(1, 4);
-            Invoke("EnemyUsualMove", nextJumpTime);
-        }
-        else if (isplayerchecking)
-        {
-            Invoke("EnemyAngryMove", 0.5f);
+            CancelInvoke("NextMoveSelect");
+            spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f);
+            spriteRenderer.flipY = true;
+            capsuleCollider.enabled = false;
+
+            Invoke("Disappear_Goblin", 3);
         }
     }
 
@@ -130,79 +126,55 @@ public class Goblin : MonsterBase
             seeright = false;
     }
 
-    /*private void OnCollisionEnter2D(Collision2D collision)
+    void Disappear_Goblin()
     {
-        if (collision.gameObject.tag == "Wall")
-        {
-            Invoke("EnemyMove", nextJumpTime);
-            nextJumpdirection = nextJumpdirection * -1;
-            rigid.AddForce(new Vector2(nextJumpdirection * 3, 1), ForceMode2D.Impulse);
-        }
-    }*/
-
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-
-
-
-    void Update()
-    {
-        anim.SetBool("isJumping", isjumping);
-        anim.SetBool("isPlayerChecking", isplayerchecking);
-
-
-        HP_UI_Update();
-        Die_Effect_Slime();
-
-
-        /*if (isplayerchecking != prevPlayerChecking)
-        {
-            Debug.Log("Trun");
-            CancelInvoke();
-            EnemyAngryMove();
-        }
-        prevPlayerChecking = isplayerchecking;*/
-    }
-
-    void HP_UI_Update()
-    {
-        // 예시: 체력 줄어들 때 fillAmount 조절
-        // bar.transform.GetChild(0)는 HPFill Image
-        float hpRatio = HP / 100f;
-        healthBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
-    }
-
-    void Die_Effect_Slime()
-    {
-        if (HP <= 0)
-        {
-            CancelInvoke("NextMoveSelect");
-            spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f);
-            spriteRenderer.flipY = true;
-            circleCollider.enabled = false;
-
-            Invoke("Disappear_Slime", 3);
-        }
-    }
-
-    void Disappear_Slime()
-    {
-        circleCollider.enabled = false;
+        capsuleCollider.enabled = false;
         gameObject.SetActive(false);
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+
         // 바닥 감지 Ray 함수
         PlatfromCheckRay();
 
         // 플레이어 감지 Ray 함수
         PlayerCheckRay();
 
+        // 고블린 이동 함수
+        EnemyMove();
+
+        if (isplayerchecking)
+        {
+            CancelInvoke();
+            EnemyMoveDirection();
+        }
+    }
+
+    void EnemyMove()
+    {
+        Vector2 movevec = new Vector2(direction, 0);
+
+        rigid.AddForce(movevec, ForceMode2D.Impulse);
 
 
-        spriteRenderer.flipX = !seeright;
-
+        if (!isplayerchecking && rigid.linearVelocity.x > 3)
+        {
+            rigid.linearVelocity = new Vector2(3, rigid.linearVelocity.y);
+        }
+        else if (!isplayerchecking && rigid.linearVelocity.x < -3)
+        {
+            rigid.linearVelocity = new Vector2(-3, rigid.linearVelocity.y);
+        }
+        else if (isplayerchecking && rigid.linearVelocity.x > 5)
+        {
+            rigid.linearVelocity = new Vector2(5, rigid.linearVelocity.y);
+        }
+        else if (isplayerchecking && rigid.linearVelocity.x < -5)
+        {
+            rigid.linearVelocity = new Vector2(-5, rigid.linearVelocity.y);
+        }
     }
 
     void PlatfromCheckRay()
@@ -218,7 +190,7 @@ public class Goblin : MonsterBase
             {
                 if (dawnray.collider.gameObject.layer == 10)
                 {
-                    isjumping = false;
+
                 }
 
             }
@@ -247,19 +219,6 @@ public class Goblin : MonsterBase
 
             if (playercheckray.collider != null && playercheckray.collider.gameObject.layer == 3)
             {
-                /*if (!isplayerchecking)
-                {
-                    isplayerchecking = true; // ★ 먼저 true로 설정
-
-
-                    tryInvoke = true;
-                    InvokeControl();
-
-                }
-                else
-                {
-                    isplayerchecking = true;
-                }*/
                 isplayerchecking = true;
             }
             else
@@ -267,37 +226,24 @@ public class Goblin : MonsterBase
                 isplayerchecking = false;
             }
         }
-
-
     }
 
-
-    void InvokeControl()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (tryInvoke)
+        if (collision.gameObject.layer == 11)
         {
-            CancelInvoke("NextMoveSelect");
-            Invoke("NextMoveSelect", 0.5f);
-
-            tryInvoke = false;
+            direction = direction * -1;
         }
     }
 
 
-
-
-    /*public void OnDamaged(int dir)
+    public override void GoblinDamage(int dir)
     {
-        rigid.AddForce(new Vector2 (dir , 1) * 6, ForceMode2D.Impulse);
-    }*/
-
-    public override void SlimeDamage(int dir)
-    {
-        // 슬라임 맞는 연출
+        // 고블린 맞는 연출
         rigid.AddForce(new Vector2(dir, 1) * 3, ForceMode2D.Impulse);
         if (!isplayerchecking)
         {
-            seeright = !seeright;
+            direction = direction * -1;
         }
         subanim.SetTrigger("isDamaging");
 

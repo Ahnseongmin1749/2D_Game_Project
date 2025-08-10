@@ -10,6 +10,7 @@ TagManager:
   - test
   - Village
   - Wild
+  - Goblin
   layers:
   - Default
   - TransparentFX

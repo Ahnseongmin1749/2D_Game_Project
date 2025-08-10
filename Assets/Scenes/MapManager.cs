@@ -57,7 +57,6 @@ public class MapManager : MonoBehaviour
         {
             if (map.activeSelf)
             {
-                Debug.Log(map);
 
                 if (map.tag == "Village")
                 {

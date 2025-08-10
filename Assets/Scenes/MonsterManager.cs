@@ -36,6 +36,11 @@ public class MonsterManager : MonoBehaviour
             MonsterBase mb = col.GetComponent<MonsterBase>();
             mb.SlimeDamage(dir);
         }
+        else if (col.gameObject.tag == "Goblin")
+        {
+            MonsterBase mb = col.GetComponent<MonsterBase>();
+            mb.GoblinDamage(dir);
+        }
     }
 
 
