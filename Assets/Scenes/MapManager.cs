@@ -5,6 +5,7 @@ public class MapManager : MonoBehaviour
 {
     Dictionary<int, GameObject[]> PortalData;
     public GameObject[] map_arr;
+    public GameObject[] portal_arr;
 
     public GameObject player;
     public Animator animator;
@@ -26,11 +27,11 @@ public class MapManager : MonoBehaviour
 
     void MapListAdd()
     {
-        PortalData.Add(1, new GameObject[] { map_arr[0], map_arr[1] });
-        PortalData.Add(2, new GameObject[] { map_arr[1], map_arr[0] });
+        PortalData.Add(1, new GameObject[] { map_arr[0], map_arr[1], portal_arr[1]});
+        PortalData.Add(2, new GameObject[] { map_arr[1], map_arr[0], portal_arr[0] });
 
-        PortalData.Add(3, new GameObject[] { map_arr[1], map_arr[2] });
-        PortalData.Add(4, new GameObject[] { map_arr[2], map_arr[1] });
+        PortalData.Add(3, new GameObject[] { map_arr[1], map_arr[2], portal_arr[3] });
+        PortalData.Add(4, new GameObject[] { map_arr[2], map_arr[1], portal_arr[2] });
     }
 
     public GameObject GetCurrentMap(int id)
@@ -41,6 +42,10 @@ public class MapManager : MonoBehaviour
     {
         
         return PortalData[id][1];
+    }
+    public GameObject GetTargetMapPortal(int id)
+    {
+        return PortalData[id][2];
     }
 
     

@@ -35,9 +35,12 @@ public class Portal : MonoBehaviour
             tryPortal = false;
             GameObject currentmap = mapManager.GetCurrentMap(portal_id);
             GameObject targetmap = mapManager.GetTargetMap(portal_id);
+            GameObject targetmap_portal = mapManager.GetTargetMapPortal(portal_id);
             currentmap.SetActive(false);
             targetmap.SetActive(true);
+            Vector3 vec = targetmap_portal.gameObject.transform.position;
 
+            collision.transform.position = vec;
 
             mapManager.CheckCurrentMap();
 
