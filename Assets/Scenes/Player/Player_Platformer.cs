@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class Player_Platformer : MonoBehaviour
 {
-    Rigidbody2D rigid;
+    public Rigidbody2D rigid;
     public float move;
     public float speed;
     public bool isrightlooking;
@@ -16,11 +16,13 @@ public class Player_Platformer : MonoBehaviour
     public Animator anim;
     SpriteRenderer spriteRenderer;
     bool isjumping;
+    bool isaerial;
     bool isAttachWall;
     RaycastHit2D downray;
     RaycastHit2D frontray;
 
     Player_State state;
+    public Vector2 last_vec;
 
 
     void Awake()
@@ -29,7 +31,6 @@ public class Player_Platformer : MonoBehaviour
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         state = GetComponent<Player_State>();
-        
     }
 
     
@@ -80,8 +81,12 @@ public class Player_Platformer : MonoBehaviour
             anim.SetBool("ismoving", false);
             anim.SetInteger("xVelocity", (int)move);
         }
-        
-        
+
+        if (!isaerial)
+        {
+            last_vec = gameObject.transform.position;
+        }
+
     }
 
     void CheckRightLooking()
@@ -120,7 +125,7 @@ public class Player_Platformer : MonoBehaviour
 
         //JumpCheckRay
         JumpCheckFunc();
-        
+        aerialCheckFunc();
     }
 
 
@@ -148,9 +153,25 @@ public class Player_Platformer : MonoBehaviour
                     isjumping = false;
                     isAttachWall = false;
                 }
-
             }
         }
+    }
+
+    void aerialCheckFunc()
+    {
+        Debug.DrawRay(transform.position, Vector2.down* 1, new Color(1, 0, 0, 0.7f));
+
+        downray = Physics2D.Raycast(transform.position, Vector2.down, 1, LayerMask.GetMask("Platform"));
+        if (downray.collider != null)
+        {
+            if (downray.collider.gameObject.layer == 10)
+            {
+                isaerial = false;
+            }
+        }
+        else
+        { isaerial = true; }
+
     }
 
     void FrontCheckRay()
@@ -174,11 +195,11 @@ public class Player_Platformer : MonoBehaviour
                 frontray = Physics2D.Raycast(rayOrigin, xRayDirection, 1, LayerMask.GetMask("Platform"));
                 if (frontray.collider != null)
                 {
-                    if (frontray.collider.gameObject.layer == 10)
+                    /*if (frontray.collider.gameObject.layer == 10)
                     {
                         rigid.AddForce(new Vector2(0, -0.1f), ForceMode2D.Impulse);
                         isAttachWall = true;
-                    }
+                    }*/
 
                 }
 

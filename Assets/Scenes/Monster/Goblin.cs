@@ -96,9 +96,6 @@ public class Goblin : MonsterBase
 
         DirectionFlip(direction);
 
-
-        Debug.Log(isplayerchecking);
-
     }
 
     
@@ -258,7 +255,6 @@ public class Goblin : MonsterBase
         else if (!isplayerchecking && direction != 0)
         {
             direction = direction * -1;
-            Debug.Log("µÚÁ» µ¹¾ÆºÁ ¾¾¹ß¾Æ");
         }
         attackAnim.SetTrigger("isDamaging");
 

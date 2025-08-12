@@ -1,6 +1,9 @@
 using UnityEngine;
 using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 using static UnityEngine.UI.Image;
+using UnityEngine.UI;
+using UnityEngine.SceneManagement;
+using TMPro;
 
 public class Player_State : MonoBehaviour
 {
@@ -17,6 +20,8 @@ public class Player_State : MonoBehaviour
     public GameObject attackZone;
     GameObject weapon;
     SpriteRenderer w_spriteRenderer;
+    public GameObject die_ui;
+    public TextMeshProUGUI die_text;
 
     public Transform PlayerHPBar;
 
@@ -58,10 +63,31 @@ public class Player_State : MonoBehaviour
         }
         weapon.transform.position = transform.position + vec;
 
+        
         float hpRatio = hp / 100f;
         PlayerHPBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
 
+        Player_Die();
     }
+
+    void Player_Die()
+    {
+        if (hp <= 0)
+        {
+            die_ui.SetActive(true);
+            die_text.text = "You Die";
+            Time.timeScale = 0;
+        }
+    }
+
+    public void Player_Retry()
+    {
+        die_ui.SetActive(false);
+        hp = 100;
+        Time.timeScale = 1;
+        SceneManager.LoadScene(0);
+    }
+
 
     public void RigidSetting()
     {

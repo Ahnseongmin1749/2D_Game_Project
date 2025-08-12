@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +13,8 @@ public class MapManager : MonoBehaviour
     public RuntimeAnimatorController topDownAnimator;
     public RuntimeAnimatorController platformerAnimator;
     Player_State state;
+    Player_Platformer platformer;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -20,6 +23,7 @@ public class MapManager : MonoBehaviour
         MapListAdd();
 
         state = player.GetComponent<Player_State>();
+        platformer = player.GetComponent<Player_Platformer>();
 
         CheckCurrentMap();
         
@@ -95,5 +99,16 @@ public class MapManager : MonoBehaviour
         state.isTopdown = false;
         state.RigidSetting();
         state.AttackZoneSetting();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag == "Player")
+        {
+            Debug.Log("check");
+            platformer.rigid.linearVelocity = Vector2.zero;
+            collision.transform.position = platformer.last_vec;
+            state.hp = state.hp * 0.5f;
+        }
     }
 }
