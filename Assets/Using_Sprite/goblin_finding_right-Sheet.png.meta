@@ -109,12 +109,12 @@ TextureImporter:
       name: goblin_finding_right-Sheet_0
       rect:
         serializedVersion: 2
-        x: 0
-        y: 0
-        width: 17
-        height: 15
+        x: 34
+        y: 16
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -131,12 +131,12 @@ TextureImporter:
       name: goblin_finding_right-Sheet_1
       rect:
         serializedVersion: 2
-        x: 17
+        x: 0
         y: 0
-        width: 17
-        height: 15
+        width: 16
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -153,12 +153,12 @@ TextureImporter:
       name: goblin_finding_right-Sheet_2
       rect:
         serializedVersion: 2
-        x: 34
+        x: 17
         y: 0
         width: 16
-        height: 32
+        height: 16
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -167,6 +167,28 @@ TextureImporter:
       bones: []
       spriteID: fbfdaf897ef4b32f0800000000000000
       internalID: -992111436782444609
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: goblin_finding_right-Sheet_3
+      rect:
+        serializedVersion: 2
+        x: 34
+        y: 0
+        width: 16
+        height: 16
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4709c103a65b67642839d30b89f3b1b7
+      internalID: 2136912828
       vertices: []
       indices: 
       edges: []
@@ -188,6 +210,7 @@ TextureImporter:
       goblin_finding_right-Sheet_0: 3593665323960145853
       goblin_finding_right-Sheet_1: -3481594466963007097
       goblin_finding_right-Sheet_2: -992111436782444609
+      goblin_finding_right-Sheet_3: 2136912828
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

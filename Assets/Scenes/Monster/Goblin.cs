@@ -20,8 +20,10 @@ public class Goblin : MonsterBase
     SpriteRenderer spriteRenderer;
     public GameObject player;
 
-    public GameObject AttackEffect;
-    Animator subanim;
+    public GameObject attackEffect;
+    public GameObject excalEffect;
+    Animator attackAnim;
+    Animator exclaAnim;
 
     public GameObject healthBarPrefab; // 이걸 유니티에서 연결해줘 (MonsterHealthBar 프리팹)
     Transform healthBar;
@@ -34,7 +36,8 @@ public class Goblin : MonsterBase
         rigid = GetComponent<Rigidbody2D>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         anim = GetComponent<Animator>();
-        subanim = AttackEffect.GetComponent<Animator>();
+        attackAnim = attackEffect.GetComponent<Animator>();
+        exclaAnim = excalEffect.GetComponent<Animator>();
         capsuleCollider = GetComponent<CapsuleCollider2D>();
 
         gameObject.SetActive(true);
@@ -93,9 +96,12 @@ public class Goblin : MonsterBase
 
         DirectionFlip(direction);
 
-        anim.SetInteger("xVelocity", (int)direction);
-        anim.SetBool("seeRight", seeright);
+
+        Debug.Log(isplayerchecking);
+
     }
+
+    
 
     void HP_UI_Update()
     {
@@ -150,6 +156,8 @@ public class Goblin : MonsterBase
             CancelInvoke();
             EnemyMoveDirection();
         }
+
+        
     }
 
     void EnemyMove()
@@ -228,6 +236,8 @@ public class Goblin : MonsterBase
         }
     }
 
+
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.layer == 11)
@@ -240,15 +250,34 @@ public class Goblin : MonsterBase
     public override void GoblinDamage(int dir)
     {
         // 고블린 맞는 연출
-        rigid.AddForce(new Vector2(dir, 1) * 3, ForceMode2D.Impulse);
-        if (!isplayerchecking)
+        rigid.AddForce(new Vector2(dir, 1) * 5, ForceMode2D.Impulse);
+        if (!isplayerchecking && direction == 0)
+        {
+            seeright = !seeright;
+        }
+        else if (!isplayerchecking && direction != 0)
         {
             direction = direction * -1;
+            Debug.Log("뒤좀 돌아봐 씨발아");
         }
-        subanim.SetTrigger("isDamaging");
+        attackAnim.SetTrigger("isDamaging");
 
         Player_State player_State = player.GetComponent<Player_State>();
         HP -= player_State.atk;
+    }
+
+    private void LateUpdate()
+    {
+        AnimationFunc();
+    }
+
+    void AnimationFunc()
+    {
+        exclaAnim.SetBool("check!", isplayerchecking);
+        anim.SetInteger("xVelocity", (int)direction);
+        anim.SetBool("seeRight", seeright);
+        anim.SetBool("playercheck", isplayerchecking);
+
     }
 
 
