@@ -224,6 +224,10 @@ public class Goblin : MonsterBase
 
             if (playercheckray.collider != null && playercheckray.collider.gameObject.layer == 3)
             {
+                if (!isplayerchecking)
+                {
+                    anim.SetTrigger("test");
+                }
                 isplayerchecking = true;
             }
             else
