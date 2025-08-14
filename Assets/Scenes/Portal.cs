@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using System.Collections;
 
 public class Portal : MonoBehaviour
 {
@@ -13,6 +14,13 @@ public class Portal : MonoBehaviour
     public RuntimeAnimatorController platformerAnimator;
     Player_State state;*/
 
+    IEnumerator TryReset()
+    {
+        yield return new WaitForSeconds(1f);
+        Debug.Log("check");
+        tryPortal = false;
+    }
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -25,6 +33,7 @@ public class Portal : MonoBehaviour
         if (Input.GetButtonDown("Interaction"))
         {
             tryPortal = true;
+            StartCoroutine(TryReset());
         }
     }
 

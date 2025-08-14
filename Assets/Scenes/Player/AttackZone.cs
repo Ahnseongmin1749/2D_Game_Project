@@ -30,14 +30,15 @@ public class AttackZone : MonoBehaviour
     IEnumerator DisableColliderTemporarily()
     {
         col.enabled = false;
-        yield return new WaitForSeconds(0.7f);
+        yield return new WaitForSeconds(1f);
         col.enabled = true;
     }
 
     IEnumerator FalseAttack()
     {
         isAttack = true;
-        yield return new WaitForSeconds(0.7f);
+        yield return new WaitForSeconds(1f);
+        tryAttack = false;
         isAttack = false;
     }
 

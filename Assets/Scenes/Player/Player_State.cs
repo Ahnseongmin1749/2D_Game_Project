@@ -14,6 +14,8 @@ public class Player_State : MonoBehaviour
     Weapon_Manager Weapon_Manager_s;
     public int weapon_index;
     public float hp;
+    public float total_exp;
+    float exp;
     public float speed;
     public float atk;
     public float def;
@@ -24,6 +26,7 @@ public class Player_State : MonoBehaviour
     public TextMeshProUGUI die_text;
 
     public Transform PlayerHPBar;
+    public Transform PlayerEXPBar;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
@@ -67,8 +70,26 @@ public class Player_State : MonoBehaviour
         float hpRatio = hp / 100f;
         PlayerHPBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
 
+        //Exp_Calculating(total_exp);
+        float expRatio = total_exp / 100f;
+        PlayerEXPBar.GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = expRatio;
+
+        
         Player_Die();
     }
+
+
+    /*(int, float) Exp_Calculating(float total_exp)
+    {
+        int[] levelThresholds = {0, 100, 200, 300, 400 }; // 레벨 시작 경험치
+        for (int i = 0; i < levelThresholds.Length; i++)
+        {
+            if (total_exp <= levelThresholds[i])
+                exp = total_exp - levelThresholds[i];
+                return (i + 1, exp); // i가 레벨
+        }
+        
+    }*/
 
     void Player_Die()
     {

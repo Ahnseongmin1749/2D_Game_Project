@@ -19,7 +19,6 @@ public class Goblin : MonsterBase
     Animator anim;
     SpriteRenderer spriteRenderer;
     public GameObject player;
-
     public GameObject attackEffect;
     public GameObject excalEffect;
     Animator attackAnim;
@@ -87,13 +86,7 @@ public class Goblin : MonsterBase
 
     void Update()
     {
-
-
         HP_UI_Update();
-        Die_Effect_Goblin();
-
-        
-
         DirectionFlip(direction);
 
     }
@@ -108,18 +101,7 @@ public class Goblin : MonsterBase
         healthBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
     }
 
-    void Die_Effect_Goblin()
-    {
-        if (HP <= 0)
-        {
-            CancelInvoke("NextMoveSelect");
-            spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f);
-            spriteRenderer.flipY = true;
-            capsuleCollider.enabled = false;
-
-            Invoke("Disappear_Goblin", 3);
-        }
-    }
+    
 
     void DirectionFlip(float dir)
     {
@@ -129,11 +111,7 @@ public class Goblin : MonsterBase
             seeright = false;
     }
 
-    void Disappear_Goblin()
-    {
-        capsuleCollider.enabled = false;
-        gameObject.SetActive(false);
-    }
+    
 
     // Update is called once per frame
     void FixedUpdate()
@@ -264,6 +242,27 @@ public class Goblin : MonsterBase
 
         Player_State player_State = player.GetComponent<Player_State>();
         HP -= player_State.atk;
+
+        if (HP <= 0)
+        {
+            Die_Effect_Goblin();
+            player_State.total_exp += 10;
+        }
+    }
+
+    void Die_Effect_Goblin()
+    {
+        CancelInvoke("NextMoveSelect");
+        spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f);
+        spriteRenderer.flipY = true;
+        capsuleCollider.enabled = false;
+        Invoke("Disappear_Goblin", 3);
+    }
+
+    void Disappear_Goblin()
+    {
+        capsuleCollider.enabled = false;
+        gameObject.SetActive(false);
     }
 
     private void LateUpdate()

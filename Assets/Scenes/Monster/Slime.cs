@@ -151,7 +151,7 @@ public class Slime : MonsterBase
 
 
         HP_UI_Update();
-        Die_Effect_Slime();
+        
 
         
         /*if (isplayerchecking != prevPlayerChecking)
@@ -171,24 +171,7 @@ public class Slime : MonsterBase
         healthBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
     }
 
-    void Die_Effect_Slime()
-    {
-        if (HP <= 0)
-        {
-            CancelInvoke("NextMoveSelect");
-            spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f);
-            spriteRenderer.flipY = true;
-            circleCollider.enabled = false;
-
-            Invoke("Disappear_Slime", 3);
-        }
-    }
-
-    void Disappear_Slime()
-    {
-        circleCollider.enabled = false;
-        gameObject.SetActive(false);
-    }
+    
 
     // Update is called once per frame
     void FixedUpdate()
@@ -303,6 +286,32 @@ public class Slime : MonsterBase
 
         Player_State player_State = player.GetComponent<Player_State>();
         HP -= player_State.atk;
+
+
+        if (HP <= 0)
+        {
+            Die_Effect_Slime();
+            player_State.total_exp += 10;
+        }
+    }
+
+    void Die_Effect_Slime()
+    {
+        if (HP <= 0)
+        {
+            CancelInvoke("NextMoveSelect");
+            spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f);
+            spriteRenderer.flipY = true;
+            circleCollider.enabled = false;
+
+            Invoke("Disappear_Slime", 3);
+        }
+    }
+
+    void Disappear_Slime()
+    {
+        circleCollider.enabled = false;
+        gameObject.SetActive(false);
     }
 
 

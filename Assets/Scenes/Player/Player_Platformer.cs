@@ -111,6 +111,9 @@ public class Player_Platformer : MonoBehaviour
     private void FixedUpdate()
     {
         //Move
+
+        //if (!isDamageing && !isAttachWall && !isaerial)
+
         if (!isDamageing && !isAttachWall)
         {
             move = Input.GetAxisRaw("Horizontal");

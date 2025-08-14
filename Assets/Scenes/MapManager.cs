@@ -105,7 +105,6 @@ public class MapManager : MonoBehaviour
     {
         if (collision.gameObject.tag == "Player")
         {
-            Debug.Log("check");
             platformer.rigid.linearVelocity = Vector2.zero;
             collision.transform.position = platformer.last_vec;
             state.hp = state.hp * 0.5f;
