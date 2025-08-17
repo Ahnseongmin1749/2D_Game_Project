@@ -4,32 +4,29 @@ using UnityEngine;
 public class MonsterManager : MonoBehaviour
 {
     public GameObject[] monsters;
+
+    public GameObject monsterPrefab; // 몬스터 프리팹
+    public Transform[] spawnPoints;  // 스폰 위치들
+    public float spawnInterval = 5f; // 몇 초마다 스폰할지
+
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        //InvokeRepeating(nameof(SpawnMonster), 0f, spawnInterval);
     }
+
+    /*void SpawnMonster()
+    {
+        int randomIndex = Random.Range(0, spawnPoints.Length);
+        Transform spawnPoint = spawnPoints[randomIndex];
+
+        Instantiate(monsterPrefab, spawnPoint.position, spawnPoint.rotation);
+    }*/
 
     public void GetWhoMonster(Collider2D col, int dir)
     {
-        /*foreach (var monster in Monsters)
-        {
-            if (monster.tag == col.gameObject.tag)
-            {
-                MonsterBase mb = monster.GetComponentInChildren<MonsterBase>();
-                mb.TakeDamage(dir);
-            }
-            else
-            {
-                Debug.Log("testDebug");
-            }
-        }*/
-
-        /*if (col.gameObject.tag == "Slime")
-        {
-            Slime slime = col.GetComponent<Slime>();
-            slime.TakeDamage(dir);
-        }*/
 
         if (col.gameObject.tag == "Slime")
         {

@@ -10,6 +10,7 @@ public class Weapon_Manager : MonoBehaviour
     {
         weapon_strength = new Dictionary<GameObject, int>();
         Weapon_Atk_Add();
+
     }
 
     void Weapon_Atk_Add()

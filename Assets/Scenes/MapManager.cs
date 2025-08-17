@@ -9,9 +9,9 @@ public class MapManager : MonoBehaviour
     public GameObject[] portal_arr;
 
     public GameObject player;
-    public Animator animator;
+    /*public Animator animator;
     public RuntimeAnimatorController topDownAnimator;
-    public RuntimeAnimatorController platformerAnimator;
+    public RuntimeAnimatorController platformerAnimator;*/
     Player_State state;
     Player_Platformer platformer;
 
@@ -69,11 +69,11 @@ public class MapManager : MonoBehaviour
 
                 if (map.tag == "Village")
                 {
-                    SwitchToTopDown();
+                    state.SwitchToTopDown();
                 }
                 else if(map.tag == "Wild")
                 {
-                    SwitchToPlatformer();
+                    state.SwitchToPlatformer();
                 }
 
             }
@@ -81,7 +81,7 @@ public class MapManager : MonoBehaviour
 
     }
 
-    void SwitchToTopDown()
+    /*void SwitchToTopDown()
     {
         animator.runtimeAnimatorController = topDownAnimator;
         player.GetComponent<Player>().enabled = true;
@@ -99,7 +99,7 @@ public class MapManager : MonoBehaviour
         state.isTopdown = false;
         state.RigidSetting();
         state.AttackZoneSetting();
-    }
+    }*/
 
     private void OnTriggerEnter2D(Collider2D collision)
     {

@@ -24,7 +24,7 @@ public class Goblin : MonsterBase
     Animator attackAnim;
     Animator exclaAnim;
 
-    public GameObject healthBarPrefab; // 이걸 유니티에서 연결해줘 (MonsterHealthBar 프리팹)
+    public GameObject healthBarPrefab;
     Transform healthBar;
 
     CapsuleCollider2D capsuleCollider;

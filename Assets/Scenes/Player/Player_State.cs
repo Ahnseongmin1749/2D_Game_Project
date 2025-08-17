@@ -15,7 +15,6 @@ public class Player_State : MonoBehaviour
     public int weapon_index;
     public float hp;
     public float total_exp;
-    float exp;
     public float speed;
     public float atk;
     public float def;
@@ -24,13 +23,20 @@ public class Player_State : MonoBehaviour
     SpriteRenderer w_spriteRenderer;
     public GameObject die_ui;
     public TextMeshProUGUI die_text;
+    public TextMeshProUGUI exp_text;
+    public TextMeshProUGUI level_text;
 
     public Transform PlayerHPBar;
     public Transform PlayerEXPBar;
 
+    public Animator animator;
+    public RuntimeAnimatorController topDownAnimator;
+    public RuntimeAnimatorController platformerAnimator;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+        isTopdown = false;
         rigid = GetComponent<Rigidbody2D>();
         Weapon_Manager_s = Weapon_Manager.GetComponent<Weapon_Manager>();
         plyaer_Platformer= GetComponent<Player_Platformer>();
@@ -38,7 +44,6 @@ public class Player_State : MonoBehaviour
         weapon = Weapon_Manager_s.Visible_Weapon(weapon_index);
         w_spriteRenderer = weapon.GetComponent<SpriteRenderer>();
 
-        
     }
 
     private void Start()
@@ -46,8 +51,10 @@ public class Player_State : MonoBehaviour
         
         float plus_atk = Weapon_Manager_s.Get_Weapon_Atk(weapon_index);
         atk += plus_atk;
-        isTopdown = true;
         AttackZoneSetting();
+        RigidSetting();
+
+        Switch();
     }
 
     // Update is called once per frame
@@ -70,8 +77,14 @@ public class Player_State : MonoBehaviour
         float hpRatio = hp / 100f;
         PlayerHPBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
 
-        //Exp_Calculating(total_exp);
-        float expRatio = total_exp / 100f;
+        int level = Exp_Calculating(total_exp).Item1;
+        float exp = Exp_Calculating(total_exp).Item2;
+
+
+        exp_text.text = exp.ToString();
+        level_text.text = level.ToString();
+
+        float expRatio = exp / 100f;
         PlayerEXPBar.GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = expRatio;
 
         
@@ -79,17 +92,18 @@ public class Player_State : MonoBehaviour
     }
 
 
-    /*(int, float) Exp_Calculating(float total_exp)
+    (int, float) Exp_Calculating(float total_exp)
     {
-        int[] levelThresholds = {0, 100, 200, 300, 400 }; // 레벨 시작 경험치
-        for (int i = 0; i < levelThresholds.Length; i++)
-        {
-            if (total_exp <= levelThresholds[i])
-                exp = total_exp - levelThresholds[i];
-                return (i + 1, exp); // i가 레벨
-        }
-        
-    }*/
+        float current_exp;
+        int level;
+        if (total_exp >= 0 && total_exp < 100) { current_exp = total_exp; level = 1; }
+        else if (total_exp < 200) { current_exp = total_exp - 100; level = 2; }
+        else if (total_exp < 300) { current_exp = total_exp - 200; level = 3; }
+        else if (total_exp < 400) { current_exp = total_exp - 300; level = 4; }
+        else { current_exp = total_exp - 400; level = 5; }
+
+        return (level, current_exp);
+    }
 
     void Player_Die()
     {
@@ -143,20 +157,29 @@ public class Player_State : MonoBehaviour
             
         }
     }
-}
 
-
-
-/*int prev_weapon_index = -1;
-
-void Update()
-{
-    if (weapon_index != prev_weapon_index)
+    void Switch()
     {
-        weapon = Weapon_Manager_s.Visible_Weapon(weapon_index);
-        spriteRenderer = weapon.GetComponent<SpriteRenderer>();
-        prev_weapon_index = weapon_index;
+        // 이후의 보스맵씬 키운 후 보수 필요
+        SwitchToPlatformer();
+    }
+    public void SwitchToTopDown()
+    {
+        animator.runtimeAnimatorController = topDownAnimator;
+        GetComponent<Player>().enabled = true;
+        GetComponent<Player_Platformer>().enabled = false;
+        isTopdown = true;
+        RigidSetting();
+        AttackZoneSetting();
     }
 
-    // 나머지 동일
-}*/
+    public void SwitchToPlatformer()
+    {
+        animator.runtimeAnimatorController = platformerAnimator;
+        GetComponent<Player>().enabled = false;
+        GetComponent<Player_Platformer>().enabled = true;
+        isTopdown = false;
+        RigidSetting();
+        AttackZoneSetting();
+    }
+}
