@@ -54,7 +54,7 @@ public class Player_State : MonoBehaviour
         AttackZoneSetting();
         RigidSetting();
 
-        Switch();
+        //Switch();
     }
 
     // Update is called once per frame

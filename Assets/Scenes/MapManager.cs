@@ -70,6 +70,7 @@ public class MapManager : MonoBehaviour
                 if (map.tag == "Village")
                 {
                     state.SwitchToTopDown();
+                    Debug.Log("check!");
                 }
                 else if(map.tag == "Wild")
                 {
