@@ -15,6 +15,9 @@ public class MapManager : MonoBehaviour
     Player_State state;
     Player_Platformer platformer;
 
+    /*public GameManager GM;
+    GameManager gameManager;*/
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -25,8 +28,9 @@ public class MapManager : MonoBehaviour
         state = player.GetComponent<Player_State>();
         platformer = player.GetComponent<Player_Platformer>();
 
+        /*gameManager = GM.GetComponent<GameManager>();*/
+
         CheckCurrentMap();
-        
     }
 
     void MapListAdd()
@@ -108,7 +112,7 @@ public class MapManager : MonoBehaviour
         {
             platformer.rigid.linearVelocity = Vector2.zero;
             collision.transform.position = platformer.last_vec;
-            state.hp = state.hp * 0.5f;
+            GameManager.Instance.hp = GameManager.Instance.hp * 0.5f;
         }
     }
 }

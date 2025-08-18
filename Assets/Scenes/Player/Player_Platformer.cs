@@ -24,6 +24,8 @@ public class Player_Platformer : MonoBehaviour
     Player_State state;
     public Vector2 last_vec;
 
+    private GameManager gm;
+
 
     void Awake()
     {
@@ -31,6 +33,8 @@ public class Player_Platformer : MonoBehaviour
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         state = GetComponent<Player_State>();
+        var gm = GameManager.instance;
+
     }
 
     
@@ -235,7 +239,7 @@ public class Player_Platformer : MonoBehaviour
 
         //피격시 체력감소
         MonsterBase monster = col.gameObject.GetComponent<MonsterBase>();
-        state.hp -= monster.monster_atk;
+        GameManager.Instance.hp -= monster.monster_atk;
 
 
 

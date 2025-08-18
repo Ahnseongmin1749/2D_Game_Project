@@ -29,6 +29,8 @@ public class Goblin : MonsterBase
 
     CapsuleCollider2D capsuleCollider;
 
+    //private GameManager gm;
+
 
     private void Awake()
     {
@@ -38,6 +40,7 @@ public class Goblin : MonsterBase
         attackAnim = attackEffect.GetComponent<Animator>();
         exclaAnim = excalEffect.GetComponent<Animator>();
         capsuleCollider = GetComponent<CapsuleCollider2D>();
+        //var gm = GameManager.instance;
 
         gameObject.SetActive(true);
 
@@ -241,12 +244,12 @@ public class Goblin : MonsterBase
         attackAnim.SetTrigger("isDamaging");
 
         Player_State player_State = player.GetComponent<Player_State>();
-        HP -= player_State.atk;
+        HP -= GameManager.Instance.atk;
 
         if (HP <= 0)
         {
             Die_Effect_Goblin();
-            player_State.total_exp += 10;
+            GameManager.Instance.total_exp += 10;
         }
     }
 

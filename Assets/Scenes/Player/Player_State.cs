@@ -12,14 +12,16 @@ public class Player_State : MonoBehaviour
     Player_Platformer plyaer_Platformer;
     public GameObject Weapon_Manager;
     Weapon_Manager Weapon_Manager_s;
-    public int weapon_index;
-    public float hp;
+    //public int weapon_index;
+    /*public float hp;
     public float total_exp;
     public float speed;
     public float atk;
-    public float def;
+    public float def;*/
+    //private GameManager gm;
+
     public GameObject attackZone;
-    GameObject weapon;
+    public GameObject weapon;
     SpriteRenderer w_spriteRenderer;
     public GameObject die_ui;
     public TextMeshProUGUI die_text;
@@ -41,16 +43,64 @@ public class Player_State : MonoBehaviour
         Weapon_Manager_s = Weapon_Manager.GetComponent<Weapon_Manager>();
         plyaer_Platformer= GetComponent<Player_Platformer>();
 
-        weapon = Weapon_Manager_s.Visible_Weapon(weapon_index);
         w_spriteRenderer = weapon.GetComponent<SpriteRenderer>();
 
+
+        /*// --- Player 관련 ---
+        attackZone = GameObject.Find("AttackZone");
+        weapon = transform.Find("Weapon")?.gameObject;  // Player의 자식 안에 있다고 가정
+        if (weapon != null)
+            w_spriteRenderer = weapon.GetComponent<SpriteRenderer>();
+
+        animator = GetComponent<Animator>();
+
+        // --- UI 관련 ---
+        // HP Bar
+        PlayerHPBar = GameObject.Find("Canvas(Clone)/BackGround/PlayerHP").transform;
+
+        // Die UI
+        die_ui = GameObject.Find("Canvas(Clone)/Die_UI");
+        die_text = GameObject.Find("Canvas(Clone)/Die_UI/DieText (TMP)").GetComponent<TextMeshProUGUI>();
+
+        // EXP Bar + Text
+        PlayerEXPBar = GameObject.Find("Canvas(Clone)/Ex_UI/PlayerEXPBar").transform;
+        exp_text = GameObject.Find("Canvas(Clone)/Ex_UI/ExpText").GetComponent<TextMeshProUGUI>();
+
+        // Level Text
+        level_text = GameObject.Find("Canvas(Clone)/Level_UI/LevelText").GetComponent<TextMeshProUGUI>();*/
+
+        // --- Player 관련 ---
+        attackZone = GameObject.Find("AttackZone");
+        weapon = transform.Find("Weapon")?.gameObject; // Player 자식에 있을 때만
+        if (weapon != null)
+            w_spriteRenderer = weapon.GetComponent<SpriteRenderer>();
+
+        animator = GetComponent<Animator>();
+
+        // --- UI 관련 ---
+        // HP Bar
+        PlayerHPBar = GameObject.Find("Canvas/BackGround/PlayerHP").transform;
+
+        // Die UI
+        die_ui = GameObject.Find("Canvas/Die_UI");
+        if (die_ui == null) Debug.LogError(" Die_UI 못 찾음!");
+        die_text = GameObject.Find("Canvas/Die_UI/DieText (TMP)").GetComponent<TextMeshProUGUI>();
+        if (die_text == null) Debug.LogError(" DieText 못 찾음!");
+
+        // EXP Bar + Text
+        PlayerEXPBar = GameObject.Find("Canvas/Ex_UI/PlayerEXPBar").transform;
+        exp_text = GameObject.Find("Canvas/Ex_UI/ExpText").GetComponent<TextMeshProUGUI>();
+
+        // Level Text
+        level_text = GameObject.Find("Canvas/Level_UI/LevelText").GetComponent<TextMeshProUGUI>();
     }
 
     private void Start()
     {
-        
-        float plus_atk = Weapon_Manager_s.Get_Weapon_Atk(weapon_index);
-        atk += plus_atk;
+        //var gm = GameManager.instance;
+        weapon = Weapon_Manager_s.Visible_Weapon(GameManager.Instance.weapon_index);
+        float plus_atk = Weapon_Manager_s.Get_Weapon_Atk(GameManager.Instance.weapon_index);
+        GameManager.Instance.atk += plus_atk;
         AttackZoneSetting();
         RigidSetting();
 
@@ -60,6 +110,8 @@ public class Player_State : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        var gm = GameManager.instance;
+
         Vector3 vec;
         if (plyaer_Platformer.isrightlooking)
         {
@@ -73,12 +125,11 @@ public class Player_State : MonoBehaviour
         }
         weapon.transform.position = transform.position + vec;
 
-        
-        float hpRatio = hp / 100f;
+        float hpRatio = gm.hp / 100f;
         PlayerHPBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
 
-        int level = Exp_Calculating(total_exp).Item1;
-        float exp = Exp_Calculating(total_exp).Item2;
+        int level = Exp_Calculating(gm.total_exp).Item1;
+        float exp = Exp_Calculating(gm.total_exp).Item2;
 
 
         exp_text.text = exp.ToString();
@@ -107,7 +158,7 @@ public class Player_State : MonoBehaviour
 
     void Player_Die()
     {
-        if (hp <= 0)
+        if (GameManager.Instance.hp <= 0)
         {
             die_ui.SetActive(true);
             die_text.text = "You Die";
@@ -118,7 +169,7 @@ public class Player_State : MonoBehaviour
     public void Player_Retry()
     {
         die_ui.SetActive(false);
-        hp = 100;
+        GameManager.Instance.hp = 100;
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }

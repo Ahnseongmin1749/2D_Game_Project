@@ -1,11 +1,11 @@
+using TMPro;
 using UnityEngine;
 
-public class DontDestroy : MonoBehaviour
+public class GameManager : MonoBehaviour
 {
+    public static GameManager instance = null;
 
-    private static DontDestroy instance;
-
-    public static DontDestroy Instance
+    public static GameManager Instance
     {
         get
         {
@@ -16,6 +16,7 @@ public class DontDestroy : MonoBehaviour
             return instance;
         }
     }
+
     void Awake()
     {
         if (instance == null)
@@ -28,4 +29,12 @@ public class DontDestroy : MonoBehaviour
             Destroy(gameObject); // 중복 생성 방지
         }
     }
+
+    public GameObject player;
+    public int weapon_index;
+    public float hp;
+    public float total_exp;
+    public float speed;
+    public float atk;
+    public float def;
 }

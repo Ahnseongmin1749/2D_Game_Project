@@ -31,6 +31,9 @@ public class Slime : MonsterBase
 
     bool tryInvoke;
 
+    //private GameManager gm;
+
+
 
     private void Awake()
     {
@@ -39,6 +42,7 @@ public class Slime : MonsterBase
         anim = GetComponent<Animator>();
         subanim = AttackEffect.GetComponent<Animator>();
         circleCollider = GetComponent<CircleCollider2D>();
+        
 
         gameObject.SetActive(true);
         NextMoveSelect();
@@ -46,6 +50,7 @@ public class Slime : MonsterBase
 
     private void Start()
     {
+        //var gm = GameManager.instance;
         monster_atk = 10;
         HP_UI_Setting();
     }
@@ -284,14 +289,14 @@ public class Slime : MonsterBase
         }
         subanim.SetTrigger("isDamaging");
 
-        Player_State player_State = player.GetComponent<Player_State>();
-        HP -= player_State.atk;
+        HP -= GameManager.Instance.atk;
 
 
         if (HP <= 0)
         {
             Die_Effect_Slime();
-            player_State.total_exp += 10;
+
+            GameManager.Instance.total_exp += 10;
         }
     }
 
