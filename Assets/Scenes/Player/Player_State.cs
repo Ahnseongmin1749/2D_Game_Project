@@ -70,7 +70,7 @@ public class Player_State : MonoBehaviour
         level_text = GameObject.Find("Canvas(Clone)/Level_UI/LevelText").GetComponent<TextMeshProUGUI>();*/
 
         // --- Player 관련 ---
-        attackZone = GameObject.Find("AttackZone");
+      /*  attackZone = GameObject.Find("AttackZone");
         weapon = transform.Find("Weapon")?.gameObject; // Player 자식에 있을 때만
         if (weapon != null)
             w_spriteRenderer = weapon.GetComponent<SpriteRenderer>();
@@ -92,25 +92,26 @@ public class Player_State : MonoBehaviour
         exp_text = GameObject.Find("Canvas/Ex_UI/ExpText").GetComponent<TextMeshProUGUI>();
 
         // Level Text
-        level_text = GameObject.Find("Canvas/Level_UI/LevelText").GetComponent<TextMeshProUGUI>();
+        level_text = GameObject.Find("Canvas/Level_UI/LevelText").GetComponent<TextMeshProUGUI>();*/
     }
 
     private void Start()
     {
         //var gm = GameManager.instance;
-        weapon = Weapon_Manager_s.Visible_Weapon(GameManager.Instance.weapon_index);
-        float plus_atk = Weapon_Manager_s.Get_Weapon_Atk(GameManager.Instance.weapon_index);
-        GameManager.Instance.atk += plus_atk;
+        //weapon = Weapon_Manager_s.Visible_Weapon(GameManager.Instance.weapon_index);
+        /*float plus_atk = Weapon_Manager_s.Get_Weapon_Atk(GameManager.Instance.weapon_index);
+        GameManager.Instance.atk += plus_atk;*/
         AttackZoneSetting();
         RigidSetting();
 
+        GameManager.Instance.Player = this.gameObject;
         //Switch();
     }
 
     // Update is called once per frame
     void Update()
     {
-        var gm = GameManager.instance;
+        var gm = GameManager.Instance;
 
         Vector3 vec;
         if (plyaer_Platformer.isrightlooking)
@@ -125,8 +126,8 @@ public class Player_State : MonoBehaviour
         }
         weapon.transform.position = transform.position + vec;
 
-        float hpRatio = gm.hp / 100f;
-        PlayerHPBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
+        float hpRatio = gm.Hp / 100f;
+        PlayerHPBar.GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
 
         int level = Exp_Calculating(gm.total_exp).Item1;
         float exp = Exp_Calculating(gm.total_exp).Item2;
@@ -158,7 +159,7 @@ public class Player_State : MonoBehaviour
 
     void Player_Die()
     {
-        if (GameManager.Instance.hp <= 0)
+        if (GameManager.Instance.Hp <= 0)
         {
             die_ui.SetActive(true);
             die_text.text = "You Die";
@@ -169,7 +170,7 @@ public class Player_State : MonoBehaviour
     public void Player_Retry()
     {
         die_ui.SetActive(false);
-        GameManager.Instance.hp = 100;
+        GameManager.Instance.Hp = 100;
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }

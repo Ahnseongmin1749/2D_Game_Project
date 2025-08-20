@@ -1,17 +1,13 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapManager : MonoBehaviour
+public class BossMapManager : MonoBehaviour
 {
     Dictionary<int, GameObject[]> PortalData;
     public GameObject[] map_arr;
     public GameObject[] portal_arr;
 
     public GameObject player;
-    /*public Animator animator;
-    public RuntimeAnimatorController topDownAnimator;
-    public RuntimeAnimatorController platformerAnimator;*/
     Player_State state;
     Player_Platformer platformer;
 
@@ -35,11 +31,8 @@ public class MapManager : MonoBehaviour
 
     void MapListAdd()
     {
-        PortalData.Add(1, new GameObject[] { map_arr[0], map_arr[1], portal_arr[1]});
+        PortalData.Add(1, new GameObject[] { map_arr[0], map_arr[1], portal_arr[1] });
         PortalData.Add(2, new GameObject[] { map_arr[1], map_arr[0], portal_arr[0] });
-
-        PortalData.Add(3, new GameObject[] { map_arr[1], map_arr[2], portal_arr[3] });
-        PortalData.Add(4, new GameObject[] { map_arr[2], map_arr[1], portal_arr[2] });
     }
 
     public GameObject GetCurrentMap(int id)
@@ -48,7 +41,7 @@ public class MapManager : MonoBehaviour
     }
     public GameObject GetTargetMap(int id)
     {
-        
+
         return PortalData[id][1];
     }
     public GameObject GetTargetMapPortal(int id)
@@ -56,12 +49,12 @@ public class MapManager : MonoBehaviour
         return PortalData[id][2];
     }
 
-    
+
 
     // Update is called once per frame
     void Update()
     {
-        
+
     }
 
     public void CheckCurrentMap()
@@ -74,9 +67,8 @@ public class MapManager : MonoBehaviour
                 if (map.tag == "Village")
                 {
                     state.SwitchToTopDown();
-                    Debug.Log("check!");
                 }
-                else if(map.tag == "Wild")
+                else if (map.tag == "Wild")
                 {
                     state.SwitchToPlatformer();
                 }
@@ -86,25 +78,6 @@ public class MapManager : MonoBehaviour
 
     }
 
-    /*void SwitchToTopDown()
-    {
-        animator.runtimeAnimatorController = topDownAnimator;
-        player.GetComponent<Player>().enabled = true;
-        player.GetComponent<Player_Platformer>().enabled = false;
-        state.isTopdown = true;
-        state.RigidSetting();
-        state.AttackZoneSetting();
-    }
-
-    void SwitchToPlatformer()
-    {
-        animator.runtimeAnimatorController = platformerAnimator;
-        player.GetComponent<Player>().enabled = false;
-        player.GetComponent<Player_Platformer>().enabled = true;
-        state.isTopdown = false;
-        state.RigidSetting();
-        state.AttackZoneSetting();
-    }*/
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -112,7 +85,7 @@ public class MapManager : MonoBehaviour
         {
             platformer.rigid.linearVelocity = Vector2.zero;
             collision.transform.position = platformer.last_vec;
-            GameManager.Instance.hp = GameManager.Instance.hp * 0.5f;
+            GameManager.Instance.Hp = GameManager.Instance.Hp * 0.5f;
         }
     }
 }
