@@ -33,7 +33,7 @@ public class Player_Platformer : MonoBehaviour
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         state = GetComponent<Player_State>();
-        var gm = GameManager.instance;
+        var gm = GameManager.Instance;
 
     }
 
@@ -239,7 +239,7 @@ public class Player_Platformer : MonoBehaviour
 
         //피격시 체력감소
         MonsterBase monster = col.gameObject.GetComponent<MonsterBase>();
-        GameManager.Instance.hp -= monster.monster_atk;
+        GameManager.Instance.Hp -= monster.monster_atk;
 
 
 
