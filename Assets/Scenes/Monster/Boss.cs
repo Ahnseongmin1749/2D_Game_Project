@@ -23,6 +23,8 @@ public class Boss : MonoBehaviour
     float bulletCount;
 
     bool boss_jumping;
+    bool isLending;
+    bool isJumpAttack;
 
     IEnumerator ActiveAttackEffect(string effect)
     {
@@ -58,7 +60,36 @@ public class Boss : MonoBehaviour
         //Invoke("JumpAttack", 3);
         //Invoke("Rush", 8);
         //Invoke("Laser", 10);
-        Invoke("Bullet", 3);
+        //Invoke("Bullet", 3);
+        Invoke("Bullet", 1);
+    }
+
+    void NextPattern()
+    {
+        isJumpAttack = false;
+        int next_pattern_index = Random.Range(0, 4);
+
+        Debug.Log(next_pattern_index);
+
+        if (next_pattern_index == 0)
+        {
+            Rush();
+        }
+        else if (next_pattern_index == 1)
+        {
+            Laser();
+        }
+        else if (next_pattern_index == 2)
+        {
+            Bullet();
+        }
+        else if (next_pattern_index == 3)
+        {
+            JumpAttack();
+        }
+
+        
+        
     }
 
     // Update is called once per frame
@@ -80,15 +111,18 @@ public class Boss : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (rigid.linearVelocity.y < 0.5f && boss_jumping)
-        {
-            rigid.AddForce(new Vector2(0,-10), ForceMode2D.Impulse);
-        }
 
-        if (Mathf.Abs(rigid.linearVelocity.x) < 0.3f)
+
+        /*if (Mathf.Abs(rigid.linearVelocity.x) < 0.3f)
         {
-            //rigid.AddForce(new Vector2(playervec.x * 50, 1), ForceMode2D.Impulse);
             rigid.linearVelocity = new Vector2(0, 0);
+            rigid.gravityScale = 0;
+        }*/
+
+        if (rigid.linearVelocity.y < 0.5f && boss_jumping && isJumpAttack)
+        {
+            rigid.AddForce(new Vector2(0, -10), ForceMode2D.Impulse);
+            Debug.Log("운");
         }
 
         JumpCheckFunc();
@@ -106,10 +140,12 @@ public class Boss : MonoBehaviour
             {
                 if (boss_jumping == true)
                 {
-                    Debug.Log("!!!");
                     StartCoroutine(ActiveAttackEffect("earthquake"));
+                    isLending = true;
                 }
+                
                 boss_jumping = false;
+                isLending = false;
             }
         }
         else
@@ -118,16 +154,19 @@ public class Boss : MonoBehaviour
         }
     }
 
+
+
+
+
     void JumpAttack()
     {
         /*Vector2 playervec = (player.transform.position.x - gameObject.transform.position.x) > 0 ?
             Vector2.right : Vector2.left;*/
 
         //rigid.AddForce(new Vector2 (playervec.x * 3,15), ForceMode2D.Impulse);
+        isJumpAttack = true;
         rigid.linearVelocity = new Vector2(playervec.x * 3, 15);
-
-
-
+        Invoke("NextPattern", 5);
     }
 
     void Rush()
@@ -141,46 +180,52 @@ public class Boss : MonoBehaviour
             //rigid.AddForce(new Vector2(playervec.x * 50, 1), ForceMode2D.Impulse);
             rigid.linearVelocity = new Vector2(playervec.x * 20, 1);
         }
+        Invoke("NextPattern", 2);
     }
 
     void Laser()
     {
         StartCoroutine(ActiveAttackEffect("laser"));
+        Invoke("NextPattern", 2);
     }
 
     void Bullet()
     {
         StartCoroutine(BulletAttack());
-        if (bulletCount <= 3)
-        {
-            Invoke("Bullet", 1);
-        }
     }
 
     IEnumerator BulletAttack()
     {
+        rigid.gravityScale = 0;
         // 1. 특정 위치로 이동
         Vector2 targetPos = new Vector2(-16, 5); // 보스가 이동할 위치 (예시)
-        if ((Vector2)transform.position != targetPos)
+        while ((Vector2)transform.position != targetPos)
         {
-            //transform.position = Vector2.MoveTowards(transform.position, targetPos, boss_speed * Time.deltaTime);
-            transform.position = targetPos;
+            transform.position = Vector2.MoveTowards(transform.position, targetPos, boss_speed * Time.deltaTime);
+            //transform.position = targetPos;
             yield return null;
         }
-        Vector3 firePoint = transform.position + new Vector3(0, 1, 0);
-        // 2. 플레이어 방향 계산
-        Vector2 dir = (player.transform.position - firePoint).normalized;
 
-        // 3. 탄환 생성 & 발사
-        GameObject bullet = Instantiate(bulletPrefab, firePoint, Quaternion.identity);
-        Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
-        rb.linearVelocity = dir * 10;
+        for (int i = 0; i < 3; i++)
+        {
+            Vector3 firePoint = transform.position + new Vector3(0, 1, 0);
 
-        bulletCount++;
+            // 플레이어 방향 계산
+            Vector2 dir = (player.transform.position - firePoint).normalized;
 
-        
-        
+            // 탄환 생성 & 발사
+            GameObject bullet = Instantiate(bulletPrefab, firePoint, Quaternion.identity);
+            Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
+            rb.linearVelocity = dir * 10;
+
+            yield return new WaitForSeconds(1f); // 1초 대기 후 다음 발사
+        }
+
+        Invoke("NextPattern", 5);
+        rigid.gravityScale = 1;
+
     }
+
 
     private void OnCollisionEnter2D(Collision2D collision)
     {

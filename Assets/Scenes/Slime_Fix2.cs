@@ -1,0 +1,282 @@
+using System.Collections;
+using Unity.VisualScripting;
+using UnityEngine;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
+using static UnityEngine.UI.Image;
+
+public class Slime_Fix2 : MonsterBase
+{
+    bool test;
+
+    float HP = 100;
+    Rigidbody2D rigid;
+    public int nextJumpTime;
+    RaycastHit2D dawnray;
+    RaycastHit2D playercheckray;
+    bool isjumping;
+    public bool isplayerchecking;
+    bool prevPlayerChecking;
+    public bool seeright;
+    public bool isFlip;
+    Animator anim;
+    SpriteRenderer spriteRenderer;
+    public GameObject player;
+
+    public GameObject AttackEffect;
+    Animator subanim;
+
+    public GameObject healthBarPrefab; // 이걸 유니티에서 연결해줘 (MonsterHealthBar 프리팹)
+    Transform healthBar;
+
+    CircleCollider2D circleCollider;
+
+    bool tryInvoke;
+
+    
+
+    //private GameManager gm;
+
+
+
+    private void Awake()
+    {
+        rigid = GetComponent<Rigidbody2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        anim = GetComponent<Animator>();
+        subanim = AttackEffect.GetComponent<Animator>();
+        circleCollider = GetComponent<CircleCollider2D>();
+
+
+        gameObject.SetActive(true);
+        //NextMoveSelect();
+        
+    }
+
+    private void Start()
+    {
+        monster_atk = 10;
+        HP_UI_Setting();
+    }
+
+    void HP_UI_Setting()
+    {
+        // 프리팹 복사해서 생성
+        GameObject bar = Instantiate(healthBarPrefab);
+
+        // 부모를 이 몬스터로 설정 (머리 위에 따라오게 함)
+        bar.transform.SetParent(transform);
+
+        // 머리 위에 위치 조정 (y를 조금 올림)
+        bar.transform.localPosition = new Vector3(0, 1, 0); // 몬스터 크기에 따라 조절
+        /*localPosition은 부모(몬스터) 기준의 위치
+        position은 월드(전체 맵) 기준의 위치*/
+
+        // 카메라 쪽을 보게 하려면 따로 LookAt 처리 필요
+        healthBar = bar.transform;
+    }
+    
+    
+
+    
+
+    void NextMoveSelect()
+    {
+        
+    }
+
+    
+
+
+
+    void Update()
+    {
+        anim.SetBool("isJumping", isjumping);
+        anim.SetBool("isPlayerChecking", isplayerchecking);
+
+        HP_UI_Update();
+        
+        if (!isplayerchecking && !isjumping)
+        {
+            float nextJumpTime = Random.Range(1, 4);
+            StartCoroutine(EnemyUsualMove());
+        }
+        else if (isplayerchecking && !isjumping)
+        {
+            StartCoroutine(EnemyAngryMove());
+        }
+    }
+
+    IEnumerator EnemyUsualMove()
+    {
+        while (HP > 0) {
+            float nextJumpdirection = Random.Range(-1, 2);
+            yield return new WaitForSeconds(nextJumpTime);
+            isjumping = true;
+            rigid.AddForce(new Vector2(nextJumpdirection * 3, 5), ForceMode2D.Impulse);
+            DirectionFlip(nextJumpdirection);
+        }
+        
+    }
+
+    IEnumerator EnemyAngryMove()
+    {
+        while (HP > 0)
+        {
+            yield return new WaitForSeconds(1);
+            float direction = Mathf.Sign(player.transform.position.x - transform.position.x);
+            isjumping = true;
+            rigid.AddForce(new Vector2(direction * 4, 5), ForceMode2D.Impulse);
+            DirectionFlip(direction);
+        }
+    }
+    void DirectionFlip(float dir)
+    {
+        if (dir > 0)
+            seeright = true;
+        else if (dir < 0)
+            seeright = false;
+    }
+
+    void HP_UI_Update()
+    {
+        // 예시: 체력 줄어들 때 fillAmount 조절
+        // bar.transform.GetChild(0)는 HPFill Image
+        float hpRatio = HP / 100f;
+        healthBar.GetChild(0).GetChild(0).GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
+    }
+
+
+
+    // Update is called once per frame
+    void FixedUpdate()
+    {
+        // 바닥 감지 Ray 함수
+        PlatfromCheckRay();
+
+        // 플레이어 감지 Ray 함수
+        PlayerCheckRay();
+
+
+
+        spriteRenderer.flipX = !seeright;
+
+    }
+
+    void PlatfromCheckRay()
+    {
+        // 바닥 감지 ray
+        if (rigid.linearVelocity.y < 0)
+        {
+            Debug.DrawRay(transform.position, Vector2.down * 0.5f, new Color(1, 0, 0, 0.7f));
+
+            dawnray = Physics2D.Raycast(transform.position, Vector2.down,
+            0.5f, LayerMask.GetMask("Platform"));
+            if (dawnray.collider != null)
+            {
+                if (dawnray.collider.gameObject.layer == 10)
+                {
+                    isjumping = false;
+                }
+
+            }
+        }
+    }
+
+    void PlayerCheckRay()
+    {
+        // 플레이어 감지 ray, 플립기준 삼항연산자 ray 방향 판단
+        Vector3 xRayDirection = seeright ? Vector2.right : Vector2.left;
+        Debug.DrawRay(transform.position, xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
+        Debug.DrawRay(transform.position + new Vector3(0, -0.3f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
+        Debug.DrawRay(transform.position + new Vector3(0, 0.3f, 0), xRayDirection * 7f, new Color(1, 1, 0, 0.7f));
+
+        Vector2[] rayOrigins = new Vector2[]
+        {
+        transform.position,                             // 가운데
+        transform.position + new Vector3(0, -0.3f, -1), // 아래쪽
+        transform.position + new Vector3(0,  0.3f, -1)  // 위쪽
+        };
+
+
+        foreach (Vector3 rayOrigin in rayOrigins)
+        {
+            playercheckray = Physics2D.Raycast(rayOrigin, xRayDirection, 7f, LayerMask.GetMask("Player"));
+
+            if (playercheckray.collider != null && playercheckray.collider.gameObject.layer == 3)
+            {
+                if (!isplayerchecking)
+                {
+                    Debug.Log("test");
+                }
+
+                isplayerchecking = true;
+
+            }
+            else
+            {
+                isplayerchecking = false;
+            }
+        }
+
+
+    }
+
+
+    void InvokeControl()
+    {
+        if (tryInvoke)
+        {
+            CancelInvoke("NextMoveSelect");
+            Invoke("NextMoveSelect", 0.5f);
+
+            tryInvoke = false;
+        }
+    }
+
+
+
+
+    public override void SlimeDamage(int dir)
+    {
+        // 슬라임 맞는 연출
+        rigid.AddForce(new Vector2(dir, 1) * 3, ForceMode2D.Impulse);
+        if (!isplayerchecking)
+        {
+            seeright = !seeright;
+        }
+        subanim.SetTrigger("isDamaging");
+
+        HP -= GameManager.Instance.atk;
+
+
+        if (HP <= 0)
+        {
+            Die_Effect_Slime();
+
+            GameManager.Instance.total_exp += 10;
+        }
+    }
+
+    void Die_Effect_Slime()
+    {
+        if (HP <= 0)
+        {
+            CancelInvoke("NextMoveSelect");
+            spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f);
+            spriteRenderer.flipY = true;
+            circleCollider.enabled = false;
+
+            Invoke("Disappear_Slime", 3);
+        }
+    }
+
+    void Disappear_Slime()
+    {
+        circleCollider.enabled = false;
+        gameObject.SetActive(false);
+    }
+
+
+}
+
+
