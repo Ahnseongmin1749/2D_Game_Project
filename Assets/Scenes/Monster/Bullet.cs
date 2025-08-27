@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class Bullet : MonoBehaviour
 {
+    //Player_Platformer playerplatformer_cs;
     public float maxDistance = 20f; // 최대 이동 거리
     private Vector3 startPos;
 
@@ -27,6 +28,10 @@ public class Bullet : MonoBehaviour
         else if (collision != null && collision.gameObject.layer == 3)
         {
             Debug.Log("Hit!");
+            Boss boss_cs = gameObject.GetComponentInParent<Boss>();
+            boss_cs.Player_Attack();
+            //GameManager.Instance.Hp -= 10;
+            //playerplatformer_cs.OnDamaged(playervec);
         }
     }
 }

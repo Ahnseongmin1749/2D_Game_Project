@@ -1,24 +1,27 @@
 using UnityEngine;
 using System.Collections;
 
-public class Boss : MonoBehaviour
+public class Boss : MonsterBase
 {
     public GameObject player;
-
     public GameObject frontLaser;
     public GameObject earthquake;
-
     public GameObject bulletPrefab;
+    Player_Platformer playerplatformer_cs;
 
     Vector2 playervec;
     Vector2 Laservec;
     Vector2 Earthquakevec;
 
     Rigidbody2D rigid;
-    float boss_hp;
+    public float boss_hp;
     float boss_atk;
     float boss_def;
     float boss_speed = 5;
+    CapsuleCollider2D capsuleCollider;
+    SpriteRenderer spriteRenderer;
+
+    public Transform BossHPBar;
 
     float bulletCount;
 
@@ -40,7 +43,7 @@ public class Boss : MonoBehaviour
             case "earthquake":
                 {
                     earthquake.SetActive(true);
-                    yield return new WaitForSeconds(1f);
+                    yield return new WaitForSeconds(0.5f);
                     earthquake.SetActive(false);
                     break;
                 }
@@ -52,6 +55,9 @@ public class Boss : MonoBehaviour
     private void Awake()
     {
         rigid = GetComponent<Rigidbody2D>();
+        capsuleCollider = GetComponent<CapsuleCollider2D>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        playerplatformer_cs = player.GetComponent<Player_Platformer>();
     }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -107,7 +113,11 @@ public class Boss : MonoBehaviour
         frontLaser.transform.position = Laservec;
         earthquake.transform.position = Earthquakevec;
 
+
+        float hpRatio = boss_hp / 100f;
+        BossHPBar.GetComponent<UnityEngine.UI.Image>().fillAmount = hpRatio;
     }
+
 
     private void FixedUpdate()
     {
@@ -214,7 +224,7 @@ public class Boss : MonoBehaviour
             Vector2 dir = (player.transform.position - firePoint).normalized;
 
             // 탄환 생성 & 발사
-            GameObject bullet = Instantiate(bulletPrefab, firePoint, Quaternion.identity);
+            GameObject bullet = Instantiate(bulletPrefab, firePoint, Quaternion.identity,transform);
             Rigidbody2D rb = bullet.GetComponent<Rigidbody2D>();
             rb.linearVelocity = dir * 10;
 
@@ -231,7 +241,42 @@ public class Boss : MonoBehaviour
     {
         if (collision != null && collision.gameObject.layer == 3)
         {
-            Debug.Log("Hit!");
+            Debug.Log("몸통박치기");
+            Player_Attack();
         }
+    }
+
+    public override void BossDamage(int dir)
+    {
+        boss_hp -= GameManager.Instance.atk;
+
+
+        if (boss_hp <= 0)
+        {
+            Die_Effect_Boss();
+
+            GameManager.Instance.total_exp += 10;
+        }
+    }
+
+    void Die_Effect_Boss()
+    {
+        spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f);
+        spriteRenderer.flipY = true;
+        capsuleCollider.enabled = false;
+
+        Invoke("Disappear_Boss", 3);
+    }
+
+    void Disappear_Boss()
+    {
+        capsuleCollider.enabled = false;
+        gameObject.SetActive(false);
+    }
+
+    public void Player_Attack()
+    {
+        GameManager.Instance.Hp -= 10;
+        playerplatformer_cs.OnDamaged(playervec);
     }
 }

@@ -26,6 +26,8 @@ public class Player_Platformer : MonoBehaviour
 
     private GameManager gm;
 
+    CapsuleCollider2D capsuleCollider;
+
 
     void Awake()
     {
@@ -34,7 +36,7 @@ public class Player_Platformer : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         state = GetComponent<Player_State>();
         var gm = GameManager.Instance;
-
+        capsuleCollider = GetComponent<CapsuleCollider2D>();
     }
 
     
@@ -221,7 +223,7 @@ public class Player_Platformer : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         
-        if (collision.gameObject.layer == 6)
+        if (collision.gameObject.layer == 6 && !(collision.gameObject.tag == "Boss"))
         {
             OnDamaged(collision);
         }
@@ -241,9 +243,26 @@ public class Player_Platformer : MonoBehaviour
         MonsterBase monster = col.gameObject.GetComponent<MonsterBase>();
         GameManager.Instance.Hp -= monster.monster_atk;
 
+        //피격시 무적판정
+        //capsuleCollider.enabled = false;
+        gameObject.layer = 12;
 
+        Invoke("EndDamaged", 0.5f);
+    }
+    public void OnDamaged(Vector2 playervec)
+    {
+        //피격시 색깔 바꾸기
+        spriteRenderer.color = new Color(0.78f, 0.78f, 0.78f, 0.7f);
 
-        Invoke("EndDamaged", 0.3f);
+        //피격시 넉백
+        rigid.AddForce(playervec * 7, ForceMode2D.Impulse);
+        isDamageing = true;
+
+        //피격시 무적판정
+        //capsuleCollider.enabled = false;
+        gameObject.layer = 12;
+
+        Invoke("EndDamaged", 0.5f);
     }
 
     void EndDamaged()
@@ -253,5 +272,9 @@ public class Player_Platformer : MonoBehaviour
 
         //데미지상태 풀기
         isDamageing = false;
+
+        //무적상태 풀기
+        //capsuleCollider.enabled = true;
+        gameObject.layer = 3;
     }
 }

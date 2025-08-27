@@ -18,7 +18,9 @@ public class HitBox : MonoBehaviour
     {
         if (collision != null && collision.gameObject.layer == 3)
         {
-            Debug.Log("Hit!");
+            Debug.Log("HitBox hit!");
+            Boss boss_cs = gameObject.GetComponentInParent<Boss>();
+            boss_cs.Player_Attack();
         }
     }
 }

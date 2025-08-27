@@ -172,7 +172,15 @@ public class Player_State : MonoBehaviour
         die_ui.SetActive(false);
         GameManager.Instance.Hp = 100;
         Time.timeScale = 1;
-        SceneManager.LoadScene(0);
+        int index = SceneManager.GetActiveScene().buildIndex;
+        if (index == 0)
+        {
+            SceneManager.LoadScene(0);
+        }
+        else if (index == 1)
+        {
+            SceneManager.LoadScene(1);
+        }
     }
 
 
