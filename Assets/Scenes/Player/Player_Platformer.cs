@@ -2,6 +2,7 @@ using NUnit.Framework.Internal;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using System.Collections;
 
 public class Player_Platformer : MonoBehaviour
 {
@@ -12,6 +13,7 @@ public class Player_Platformer : MonoBehaviour
     public float jump;
     bool isDamageing;
     bool isLie;
+    bool isDashing = false;
 
     public Animator anim;
     SpriteRenderer spriteRenderer;
@@ -41,6 +43,16 @@ public class Player_Platformer : MonoBehaviour
 
     
 
+    IEnumerator Dash(Vector2 dir)
+    {
+        isDashing = true;
+        rigid.AddForce(dir * 10f, ForceMode2D.Impulse);
+        spriteRenderer.color = new Color(0.8f, 0.8f, 0.8f, 0.8f);
+        yield return new WaitForSeconds(0.5f); // 대쉬 시간
+        isDashing = false;
+        spriteRenderer.color = new Color(1, 1, 1, 1);
+    }
+
 
     // Update is called once per frame
     void Update()
@@ -59,12 +71,12 @@ public class Player_Platformer : MonoBehaviour
         anim.SetBool("isJump", isjumping);
         
         //Lie Animation
-        if (Input.GetKeyDown(KeyCode.DownArrow))
+        if (Input.GetKeyDown(KeyCode.S))
         {
             isLie = true;
             anim.SetBool("isLie",isLie);
         }
-        else if (Input.GetKeyUp(KeyCode.DownArrow))
+        else if (Input.GetKeyUp(KeyCode.S))
         {
             isLie = false;
             anim.SetBool("isLie", isLie);
@@ -122,12 +134,31 @@ public class Player_Platformer : MonoBehaviour
 
         if (!isDamageing && !isAttachWall)
         {
-            move = Input.GetAxisRaw("Horizontal");
+            //move = Input.GetAxisRaw("Horizontal");
+            move = 0;
+
+            if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.LeftShift)) move = -1;
+            else if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.LeftShift)) move = 1;
+            else if (!isDashing)
+            {
+                if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.LeftShift))
+                {
+                    Debug.Log("Dash1");
+                    StartCoroutine(Dash(Vector2.left));
+                }
+                else if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.LeftShift))
+                {
+                    Debug.Log("Dash2");
+                    StartCoroutine(Dash(Vector2.right));
+                }
+            }
+            
 
             float adjustedSpeed = isLie ? speed * 0.5f : speed;
 
 
-            rigid.linearVelocity = new Vector2(move * adjustedSpeed, rigid.linearVelocity.y);
+            if (!isDashing) rigid.linearVelocity = new Vector2(move * adjustedSpeed, rigid.linearVelocity.y);
+            
         }
 
 

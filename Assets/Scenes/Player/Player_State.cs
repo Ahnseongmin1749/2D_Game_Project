@@ -141,6 +141,8 @@ public class Player_State : MonoBehaviour
 
         
         Player_Die();
+
+        
     }
 
 
