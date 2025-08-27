@@ -25,13 +25,22 @@ public class Bullet : MonoBehaviour
         {
             Destroy(gameObject);
         }
-        else if (collision != null && collision.gameObject.layer == 3)
+        else if (collision != null && collision.gameObject.layer == 3 && !(gameObject.layer == 9))
         {
             Debug.Log("Hit!");
             Boss boss_cs = gameObject.GetComponentInParent<Boss>();
             boss_cs.Player_Attack();
             //GameManager.Instance.Hp -= 10;
             //playerplatformer_cs.OnDamaged(playervec);
+        }
+        else if (collision != null && collision.gameObject.layer == 6)
+        {
+            Debug.Log("parring hit!");
+
+            MonsterBase mb = collision.gameObject.GetComponent<MonsterBase>();
+            mb.BossDamage(10);
+
+            Destroy(gameObject);
         }
     }
 }

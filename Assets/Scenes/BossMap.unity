@@ -1407,6 +1407,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1532829987}
     - target: {fileID: 3915305825349016161, guid: 1191e7c0aca9bdf43ab799ed438a6603, type: 3}
+      propertyPath: swordPrefab
+      value: 
+      objectReference: {fileID: 913695033205047691, guid: 06be049b2db39f8439447ad54068c22a, type: 3}
+    - target: {fileID: 3915305825349016161, guid: 1191e7c0aca9bdf43ab799ed438a6603, type: 3}
       propertyPath: monsterManagerObject
       value: 
       objectReference: {fileID: 3862004581893485647, guid: e78e2f49baf2ad341a7fc49ffac3154e, type: 3}
